@@ -27,6 +27,14 @@ export default function Register() {
       return;
     }
 
+    const passwordRegex =
+    /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/
+
+    if (!passwordRegex.test(form.password)) {
+      alert("Password must be at least 8 characters long and contain an uppercase letter and a special character.");
+      return;
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
@@ -36,12 +44,18 @@ export default function Register() {
         },
       },
     });
+    
+    if (error) {
+      alert(error.message);
+      return;
+    }
 
     if (data.user) {
       const { error: insertError } = await supabase.from("users").insert([
         {
           id: data.user.id,
           username: form.username,
+          email: form.email,
           security_question: form.securityQuestion,
           security_answer: form.securityAnswer,
           role: "user"
@@ -50,13 +64,10 @@ export default function Register() {
 
       if (insertError) {
         alert(insertError.message);
+        return;
       }
-    }
 
-    if (error) {
-      alert(error.message);
-    } else {
-      alert("Check your email for confirmation!");
+      alert("Succesfully registered!");
       navigate("/");
     }
   };
@@ -151,6 +162,7 @@ export default function Register() {
                 placeholder="••••••••••••"
                 onChange={handleChange}
                 required
+                minLength="8"
               />
             </div>
 
