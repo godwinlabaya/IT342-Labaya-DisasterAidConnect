@@ -26,6 +26,10 @@ export default function Login() {
     }
   };
 
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:8080/oauth2/authorization/google";
+  };
+
   return (
     <div className="login-container">
       
@@ -116,6 +120,9 @@ export default function Login() {
             </div>
 
             <button type="submit">SIGN IN</button>
+            <button onClick={handleGoogleLogin}>
+              Sign in with Google
+            </button>
           </form>
 
           <div className="divider">
