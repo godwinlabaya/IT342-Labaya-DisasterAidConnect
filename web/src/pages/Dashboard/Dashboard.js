@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./Dashboard.css";
 import { supabase } from "../../supabaseClient";
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useState("");
 
   useEffect(() => {
@@ -33,6 +34,15 @@ export default function Dashboard() {
     navigate("/");
   };
 
+  const menuItems = [
+    { icon: "🏠", label: "Dashboard", path: "/dashboard" },
+    { icon: "🗺️", label: "Map", path: "/map" },
+    { icon: "📝", label: "Requests", path: "/requests" },
+    { icon: "🎁", label: "Donations", path: "/donations" },
+    { icon: "👥", label: "About Us", path: "/about" },
+    { icon: "❓", label: "Help & Support", path: "/help" },
+  ];
+
   return (
     <div className="dashboard">
 
@@ -46,30 +56,16 @@ export default function Dashboard() {
         </div>
 
         <ul className="menu">
-          <li className="active">
-            <span>🏠</span>
-            <span>Dashboard</span>
-          </li>
-          <li>
-            <span>🗺️</span>
-            <span>Map</span>
-          </li>
-          <li>
-            <span>📝</span>
-            <span>Requests</span>
-          </li>
-          <li>
-            <span>🎁</span>
-            <span>Donations</span>
-          </li>
-          <li>
-            <span>👥</span>
-            <span>About Us</span>
-          </li>
-          <li>
-            <span>❓</span>
-            <span>Help & Support</span>
-          </li>
+          {menuItems.map((item) => (
+            <li
+              key={item.path}
+              className={location.pathname === item.path ? "active" : ""}
+              onClick={() => navigate(item.path)}
+            >
+              <span>{item.icon}</span>
+              <span>{item.label}</span>
+            </li>
+          ))}
         </ul>
 
         <div className="sidebar-footer">
@@ -102,7 +98,7 @@ export default function Dashboard() {
 
           <div className="requests-header">
             <h2>
-              Recent Requests 
+              Recent Requests
               <span className="count">0 total</span>
             </h2>
 
