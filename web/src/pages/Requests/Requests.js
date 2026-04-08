@@ -3,15 +3,10 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
 import "./Requests.css";
 import { supabase } from "../../supabaseClient";
+import { getSeverityStyle } from "../../utils/iconFactory";
+import disasterService from "../../services/disasterService";
 
 const STATUS_TABS = ["All", "Active", "Monitoring", "Resolved"];
-
-function getSeverityColor(level) {
-  if (level === "Critical") return { bg: "#f3e8ff", text: "#7c3aed", border: "#d8b4fe" };
-  if (level === "High")     return { bg: "#fee2e2", text: "#dc2626", border: "#fca5a5" };
-  if (level === "Medium")   return { bg: "#ffedd5", text: "#ea580c", border: "#fdba74" };
-  return                           { bg: "#dbeafe", text: "#2563eb", border: "#93c5fd" };
-}
 
 function getStatusStyle(status) {
   if (status === "Active")     return { bg: "#dcfce7", text: "#166534", icon: "🟢" };
@@ -204,12 +199,12 @@ export default function RequestsPage() {
   const fetchDisasters = useCallback(async () => {
     if (!currentUID) return;
     setLoading(true);
-    const { data, error } = await supabase
-      .from("disasters")
-      .select("*")
-      .eq("created_by", currentUID)
-      .order("created_at", { ascending: false });
-    if (!error && data) setDisasters(data);
+    try {
+      const data = await disasterService.getByUser(currentUID);
+      setDisasters(data);
+    } catch (err) {
+      console.error("Failed to fetch:", err.message);
+    }
     setLoading(false);
   }, [currentUID]);
 
@@ -218,7 +213,7 @@ export default function RequestsPage() {
   const handleDelete = async () => {
     if (!toDelete) return;
     setDeleting(true);
-    const { error } = await supabase.from("disasters").delete().eq("id", toDelete.id);
+    await disasterService.remove(toDelete.id);
     setDeleting(false);
     if (error) { alert("Failed to delete: " + error.message); return; }
     setDisasters((prev) => prev.filter((d) => d.id !== toDelete.id));
