@@ -5,6 +5,8 @@ import "leaflet/dist/leaflet.css";
 import Sidebar from "../../components/Sidebar";
 import "./Map.css";
 import { supabase } from "../../supabaseClient";
+import { createMarkerIcon, getSeverityColor } from "../../utils/iconFactory";
+import disasterService from "../../services/disasterService";
 
 // Fix broken default marker icons in webpack/CRA
 delete L.Icon.Default.prototype._getIconUrl;
@@ -20,33 +22,12 @@ const SEVERITY_LEVELS  = ["Low", "Medium", "High", "Critical"];
 const STATUS_OPTIONS   = ["Active", "Monitoring", "Resolved"];
 const EMPTY_FORM       = { title: "", description: "", severity_level: "Medium", status: "Active" };
 
-function getSeverityColor(level) {
-  if (level === "Critical") return "#7c3aed";
-  if (level === "High")     return "#ef4444";
-  if (level === "Medium")   return "#f97316";
-  return "#3b82f6";
-}
-
 function formatDate(iso) {
   if (!iso) return "";
   return new Date(iso).toLocaleString("en-US", {
     month: "long", day: "numeric", year: "numeric",
     hour: "numeric", minute: "2-digit", hour12: true,
   });
-}
-
-function makeIcon(color, isTemp = false) {
-  const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="44" viewBox="0 0 32 44">
-      <filter id="s"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.25"/></filter>
-      <path filter="url(#s)"
-        d="M16 0C7.163 0 0 7.163 0 16c0 11.667 16 28 16 28S32 27.667 32 16C32 7.163 24.837 0 16 0z"
-        fill="${color}" opacity="${isTemp ? 0.5 : 1}"/>
-      <circle cx="16" cy="16" r="7" fill="white" opacity="0.9"/>
-      ${isTemp ? `<line x1="16" y1="10" x2="16" y2="22" stroke="${color}" stroke-width="2.5"/>
-                  <line x1="10" y1="16" x2="22" y2="16" stroke="${color}" stroke-width="2.5"/>` : ""}
-    </svg>`;
-  return L.divIcon({ html: svg, className: "", iconSize: [32,44], iconAnchor: [16,44], popupAnchor: [0,-46] });
 }
 
 function FlyTo({ position }) {
@@ -179,19 +160,18 @@ export default function MapPage() {
   }, []);
 
   // ── Fetch ───────────────────────────────────────────────────────────────────
-  const fetchDisasters = useCallback(async () => {
+    const fetchDisasters = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("disasters")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (!error && data) {
+    try {
+      const data = await disasterService.getAll();
       setDisasters(data);
       if (data.length > 0) setSelected((prev) => prev ?? data[0]);
+    } catch (err) {
+      console.error("Failed to fetch disasters:", err.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
-
   useEffect(() => { fetchDisasters(); }, [fetchDisasters]);
 
   const isOwner = selected?.created_by === currentUID;
@@ -204,15 +184,14 @@ export default function MapPage() {
     setShowAdd(true);
   }, []);
 
-  const handleAdd = async () => {
+    const handleAdd = async () => {
     if (!addForm.title.trim())       { setAddError("Title is required.");       return; }
     if (!addForm.description.trim()) { setAddError("Description is required."); return; }
     setAddSaving(true); setAddError("");
 
-    const { data: { session } } = await supabase.auth.getSession();
-    const { data, error } = await supabase
-      .from("disasters")
-      .insert([{
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const data = await disasterService.create({
         title:          addForm.title.trim(),
         description:    addForm.description.trim(),
         severity_level: addForm.severity_level,
@@ -220,18 +199,17 @@ export default function MapPage() {
         latitude:       pendingPin.lat,
         longitude:      pendingPin.lng,
         created_by:     session?.user?.id ?? null,
-      }])
-      .select()
-      .single();
-
-    setAddSaving(false);
-    if (error) { setAddError("Failed to save: " + error.message); return; }
-
-    setDisasters((prev) => [data, ...prev]);
-    setSelected(data);
-    setPendingPin(null);
-    setShowAdd(false);
-    setAddMode(false);
+      });
+      setDisasters((prev) => [data, ...prev]);
+      setSelected(data);
+      setPendingPin(null);
+      setShowAdd(false);
+      setAddMode(false);
+    } catch (err) {
+      setAddError("Failed to save: " + err.message);
+    } finally {
+      setAddSaving(false);
+    }
   };
 
   const cancelAdd = () => {
@@ -251,47 +229,44 @@ export default function MapPage() {
     setShowEdit(true);
   };
 
-  const handleEdit = async () => {
-    if (!editForm.title.trim())       { setEditError("Title is required.");       return; }
-    if (!editForm.description.trim()) { setEditError("Description is required."); return; }
-    setEditSaving(true); setEditError("");
+const handleEdit = async () => {
+  if (!editForm.title.trim())       { setEditError("Title is required.");       return; }
+  if (!editForm.description.trim()) { setEditError("Description is required."); return; }
+  setEditSaving(true); setEditError("");
 
-    const { data, error } = await supabase
-      .from("disasters")
-      .update({
-        title:          editForm.title.trim(),
-        description:    editForm.description.trim(),
-        severity_level: editForm.severity_level,
-        status:         editForm.status,
-      })
-      .eq("id", selected.id)
-      .select()
-      .single();
-
-    setEditSaving(false);
-    if (error) { setEditError("Failed to update: " + error.message); return; }
-
+  try {
+    const data = await disasterService.update(selected.id, {
+      title:          editForm.title.trim(),
+      description:    editForm.description.trim(),
+      severity_level: editForm.severity_level,
+      status:         editForm.status,
+    });
     setDisasters((prev) => prev.map((d) => d.id === data.id ? data : d));
     setSelected(data);
     setShowEdit(false);
-  };
+  } catch (err) {
+    setEditError("Failed to update: " + err.message);
+  } finally {
+    setEditSaving(false);
+  }
+};
 
   // ── Delete ──────────────────────────────────────────────────────────────────
   const handleDelete = async () => {
-    setDeleting(true);
-    const { error } = await supabase
-      .from("disasters")
-      .delete()
-      .eq("id", selected.id);
+  setDeleting(true);
 
-    setDeleting(false);
-    if (error) { alert("Failed to delete: " + error.message); return; }
-
+  try {
+    await disasterService.remove(selected.id);
     const remaining = disasters.filter((d) => d.id !== selected.id);
     setDisasters(remaining);
     setSelected(remaining[0] ?? null);
     setConfirmDelete(false);
-  };
+  } catch (err) {
+    alert("Failed to delete: " + err.message);
+  } finally {
+    setDeleting(false);
+  }
+};
 
   // ── Filtered list ────────────────────────────────────────────────────────────
   const filtered = disasters.filter(
@@ -472,7 +447,7 @@ export default function MapPage() {
                   <Marker
                     key={d.id}
                     position={[d.latitude, d.longitude]}
-                    icon={makeIcon(getSeverityColor(d.severity_level))}
+                    icon={createMarkerIcon(d.severity_level)}
                     eventHandlers={{ click: () => setSelected(d) }}
                   >
                     <Popup className="osm-popup">
@@ -491,7 +466,7 @@ export default function MapPage() {
               {pendingPin && (
                 <Marker
                   position={[pendingPin.lat, pendingPin.lng]}
-                  icon={makeIcon("#6b7280", true)}
+                  icon={createMarkerIcon("Low", { isTemp: true })}
                 />
               )}
             </MapContainer>
