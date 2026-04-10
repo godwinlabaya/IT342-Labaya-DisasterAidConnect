@@ -46,10 +46,12 @@ export default function Login() {
         <h2>Transform Crisis Into Coordinated Action</h2>
 
         <p className="description">
-          Connect communities, volunteers, and aid organizations in real time.
+          Connects communities, volunteers, and aid organizations in real time.
           Disaster Aid Connect helps streamline relief efforts, allocate resources
           efficiently, and support those affected when it matters most.
         </p>
+
+        <p>hello</p>
 
         <div className="features">
 
