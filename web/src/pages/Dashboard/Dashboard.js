@@ -2,32 +2,15 @@ import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./Dashboard.css";
 import { supabase } from "../../supabaseClient";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [user, setUser] = useState("");
+  
 
-  useEffect(() => {
-    const getUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+  const { username, loading } = useAuth({ redirectIfUnauthenticated: true });
 
-      if (!session) {
-        navigate("/");
-        return;
-      }
-
-      const { data } = await supabase
-        .from("users")
-        .select("username")
-        .eq("id", session.user.id)
-        .single();
-
-      if (data) setUser(data.username);
-    };
-
-    getUser();
-  }, [navigate]);
 
   const logout = async () => {
     await supabase.auth.signOut();
@@ -83,7 +66,7 @@ export default function Dashboard() {
         {/* HEADER */}
         <div className="header">
           <div className="header-left">
-            <h1>Welcome, {user || "Username"}!</h1>
+            <h1>Welcome, {username || "Username"}!</h1>
             <p>Here's what's happening today</p>
           </div>
 
