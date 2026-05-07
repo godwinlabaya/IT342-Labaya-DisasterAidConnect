@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
 import "./Requests.css";
 import { supabase } from "../../supabaseClient";
-import { getSeverityStyle } from "../../utils/iconFactory";
+import { getSeverityColor } from "../../utils/iconFactory";
 import disasterService from "../../services/disasterService";
 
-const STATUS_TABS = ["All", "Active", "Monitoring", "Resolved"];
+const STATUS_TABS  = ["All", "Active", "Monitoring", "Resolved"];
+const PAGE_SIZE    = 6; // cards per page
 
 function getStatusStyle(status) {
   if (status === "Active")     return { bg: "#dcfce7", text: "#166534", icon: "🟢" };
@@ -23,6 +24,7 @@ function formatDate(iso) {
   });
 }
 
+// ── Empty state ───────────────────────────────────────────────────────────────
 function EmptyState({ onAdd }) {
   return (
     <div className="req-empty">
@@ -40,6 +42,7 @@ function EmptyState({ onAdd }) {
   );
 }
 
+// ── Request card ──────────────────────────────────────────────────────────────
 function RequestCard({ disaster, onView, onDelete }) {
   const sev    = getSeverityColor(disaster.severity_level);
   const status = getStatusStyle(disaster.status);
@@ -92,6 +95,7 @@ function RequestCard({ disaster, onView, onDelete }) {
   );
 }
 
+// ── Detail modal ──────────────────────────────────────────────────────────────
 function DetailModal({ disaster, onClose, onDelete }) {
   if (!disaster) return null;
   const sev    = getSeverityColor(disaster.severity_level);
@@ -154,6 +158,7 @@ function DetailModal({ disaster, onClose, onDelete }) {
   );
 }
 
+// ── Confirm dialog ────────────────────────────────────────────────────────────
 function ConfirmDialog({ disaster, onConfirm, onCancel, deleting }) {
   return (
     <div className="req-backdrop">
@@ -174,20 +179,85 @@ function ConfirmDialog({ disaster, onConfirm, onCancel, deleting }) {
   );
 }
 
+// ── Pagination bar ────────────────────────────────────────────────────────────
+function Pagination({ currentPage, totalPages, onPageChange }) {
+  if (totalPages <= 1) return null;
+
+  // Build page number array with ellipsis logic
+  const pages = [];
+  for (let i = 1; i <= totalPages; i++) {
+    if (
+      i === 1 ||
+      i === totalPages ||
+      (i >= currentPage - 1 && i <= currentPage + 1)
+    ) {
+      pages.push(i);
+    } else if (
+      i === currentPage - 2 ||
+      i === currentPage + 2
+    ) {
+      pages.push("...");
+    }
+  }
+
+  // Deduplicate consecutive "..."
+  const dedupedPages = pages.filter(
+    (p, idx) => !(p === "..." && pages[idx - 1] === "...")
+  );
+
+  return (
+    <div className="req-pagination">
+      <button
+        className="req-page-btn"
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+      >
+        ← Prev
+      </button>
+
+      <div className="req-page-numbers">
+        {dedupedPages.map((p, idx) =>
+          p === "..." ? (
+            <span key={`ellipsis-${idx}`} className="req-page-ellipsis">…</span>
+          ) : (
+            <button
+              key={p}
+              className={`req-page-num ${currentPage === p ? "req-page-num-active" : ""}`}
+              onClick={() => onPageChange(p)}
+            >
+              {p}
+            </button>
+          )
+        )}
+      </div>
+
+      <button
+        className="req-page-btn"
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+      >
+        Next →
+      </button>
+    </div>
+  );
+}
+
+// ── Main page ─────────────────────────────────────────────────────────────────
 export default function RequestsPage() {
   const navigate = useNavigate();
 
-  const [disasters,    setDisasters]    = useState([]);
-  const [loading,      setLoading]      = useState(true);
-  const [currentUID,   setCurrentUID]   = useState(null);
-  const [activeTab,    setActiveTab]    = useState("All");
-  const [search,       setSearch]       = useState("");
-  const [searchInput,  setSearchInput]  = useState("");
-  const [dateFilter,   setDateFilter]   = useState("");
+  const [disasters,        setDisasters]        = useState([]);
+  const [loading,          setLoading]          = useState(true);
+  const [currentUID,       setCurrentUID]       = useState(null);
+  const [activeTab,        setActiveTab]        = useState("All");
+  const [search,           setSearch]           = useState("");
+  const [searchInput,      setSearchInput]      = useState("");
+  const [dateFilter,       setDateFilter]       = useState("");
   const [activeDateFilter, setActiveDateFilter] = useState("");
-  const [viewDisaster, setViewDisaster] = useState(null);
-  const [toDelete,     setToDelete]     = useState(null);
-  const [deleting,     setDeleting]     = useState(false);
+  const [viewDisaster,     setViewDisaster]     = useState(null);
+  const [toDelete,         setToDelete]         = useState(null);
+  const [deleting,         setDeleting]         = useState(false);
+  const [currentPage,      setCurrentPage]      = useState(1);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -213,25 +283,38 @@ export default function RequestsPage() {
   const handleDelete = async () => {
     if (!toDelete) return;
     setDeleting(true);
-    await disasterService.remove(toDelete.id);
-    setDeleting(false);
-    if (error) { alert("Failed to delete: " + error.message); return; }
-    setDisasters((prev) => prev.filter((d) => d.id !== toDelete.id));
-    setToDelete(null);
-    setViewDisaster(null);
+    try {
+      await disasterService.remove(toDelete.id);
+      setDisasters((prev) => prev.filter((d) => d.id !== toDelete.id));
+      setToDelete(null);
+      setViewDisaster(null);
+    } catch (err) {
+      alert("Failed to delete: " + err.message);
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const applyFilters = () => {
     setSearch(searchInput);
     setActiveDateFilter(dateFilter);
+    setCurrentPage(1); // always go back to page 1 when filtering
   };
 
   const resetFilters = () => {
     setSearch(""); setSearchInput("");
     setDateFilter(""); setActiveDateFilter("");
     setActiveTab("All");
+    setCurrentPage(1);
   };
 
+  // Reset to page 1 whenever tab changes
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setCurrentPage(1);
+  };
+
+  // ── Filter all disasters ─────────────────────────────────────────────────
   const filtered = disasters.filter((d) => {
     const matchTab  = activeTab === "All" || d.status === activeTab;
     const matchSrch = !search || (
@@ -242,6 +325,17 @@ export default function RequestsPage() {
     return matchTab && matchSrch && matchDate;
   });
 
+  // ── Pagination logic ─────────────────────────────────────────────────────
+  const totalPages  = Math.ceil(filtered.length / PAGE_SIZE);
+  const startIndex  = (currentPage - 1) * PAGE_SIZE;
+  const paginated   = filtered.slice(startIndex, startIndex + PAGE_SIZE);
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // ── Counts for tabs ──────────────────────────────────────────────────────
   const counts = STATUS_TABS.reduce((acc, tab) => {
     acc[tab] = tab === "All" ? disasters.length : disasters.filter((d) => d.status === tab).length;
     return acc;
@@ -315,7 +409,7 @@ export default function RequestsPage() {
               <button
                 key={tab}
                 className={`req-tab ${activeTab === tab ? "req-tab-active" : ""}`}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => handleTabChange(tab)}
               >
                 {tab === "All"        && <span className="tab-icon">◉</span>}
                 {tab === "Active"     && <span className="tab-icon">✦</span>}
@@ -339,16 +433,31 @@ export default function RequestsPage() {
           ) : filtered.length === 0 ? (
             <EmptyState onAdd={() => navigate("/map")} />
           ) : (
-            <div className="req-grid">
-              {filtered.map((d) => (
-                <RequestCard
-                  key={d.id}
-                  disaster={d}
-                  onView={setViewDisaster}
-                  onDelete={setToDelete}
-                />
-              ))}
-            </div>
+            <>
+              {/* Results info */}
+              <div className="req-results-info">
+                Showing {startIndex + 1}–{Math.min(startIndex + PAGE_SIZE, filtered.length)} of {filtered.length} request{filtered.length !== 1 ? "s" : ""}
+              </div>
+
+              {/* Cards grid */}
+              <div className="req-grid">
+                {paginated.map((d) => (
+                  <RequestCard
+                    key={d.id}
+                    disaster={d}
+                    onView={setViewDisaster}
+                    onDelete={setToDelete}
+                  />
+                ))}
+              </div>
+
+              {/* Pagination */}
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            </>
           )}
         </div>
       </div>

@@ -627,3 +627,96 @@
   .req-tabs-bar { flex-direction: column; align-items: flex-start; }
   .req-modal-grid { grid-template-columns: 1fr; }
 }
+
+/* ── Results info line ───────────────────────────────────────────────────── */
+.req-results-info {
+  font-size: 13px;
+  color: #9ca3af;
+  margin-bottom: 16px;
+}
+
+/* ── Pagination wrapper ──────────────────────────────────────────────────── */
+.req-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 32px;
+  padding-bottom: 8px;
+}
+
+/* ── Prev / Next buttons ─────────────────────────────────────────────────── */
+.req-page-btn {
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.req-page-btn:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.req-page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── Page number group ───────────────────────────────────────────────────── */
+.req-page-numbers {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Individual page number button ───────────────────────────────────────── */
+.req-page-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.req-page-num:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+/* ── Active page ─────────────────────────────────────────────────────────── */
+.req-page-num-active {
+  background: #0a2942;
+  color: white;
+  border-color: #0a2942;
+}
+
+.req-page-num-active:hover {
+  background: #0a2942;
+  border-color: #0a2942;
+}
+
+/* ── Ellipsis ────────────────────────────────────────────────────────────── */
+.req-page-ellipsis {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  font-size: 14px;
+  user-select: none;
+}
