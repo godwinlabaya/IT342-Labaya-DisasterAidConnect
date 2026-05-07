@@ -7,6 +7,7 @@ import "./Map.css";
 import { supabase } from "../../supabaseClient";
 import { createMarkerIcon, getSeverityColor } from "../../utils/iconFactory";
 import disasterService from "../../services/disasterService";
+import { useAuth } from "../../hooks/useAuth";
 
 // Fix broken default marker icons in webpack/CRA
 delete L.Icon.Default.prototype._getIconUrl;
@@ -16,11 +17,12 @@ L.Icon.Default.mergeOptions({
   shadowUrl:     require("leaflet/dist/images/marker-shadow.png"),
 });
 
-const DEFAULT_CENTER   = [10.3157, 123.8854];
-const DEFAULT_ZOOM     = 13;
-const SEVERITY_LEVELS  = ["Low", "Medium", "High", "Critical"];
-const STATUS_OPTIONS   = ["Active", "Monitoring", "Resolved"];
-const EMPTY_FORM       = { title: "", description: "", severity_level: "Medium", status: "Active" };
+const DEFAULT_CENTER  = [10.3157, 123.8854];
+const DEFAULT_ZOOM    = 13;
+const SEVERITY_LEVELS = ["Low", "Medium", "High", "Critical"];
+const STATUS_OPTIONS  = ["Active", "Monitoring", "Resolved"];
+const EMPTY_FORM      = { title: "", description: "", severity_level: "Medium", status: "Active" };
+const MAX_IMAGES      = 3;
 
 function formatDate(iso) {
   if (!iso) return "";
@@ -31,7 +33,7 @@ function formatDate(iso) {
 }
 
 function FlyTo({ position }) {
-  const map = useMap();
+  const map  = useMap();
   const prev = useRef(null);
   useEffect(() => {
     if (position && JSON.stringify(position) !== JSON.stringify(prev.current)) {
@@ -62,8 +64,107 @@ function ConfirmDialog({ message, onConfirm, onCancel }) {
   );
 }
 
+// ── Image uploader ────────────────────────────────────────────────────────────
+function ImageUploader({ images, setImages }) {
+  const inputRef = useRef(null);
+
+  const handleFiles = (e) => {
+    const files = Array.from(e.target.files);
+    const remaining = MAX_IMAGES - images.length;
+    const toAdd = files.slice(0, remaining).map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+    setImages((prev) => [...prev, ...toAdd]);
+    e.target.value = "";
+  };
+
+  const removeImage = (idx) => {
+    setImages((prev) => {
+      URL.revokeObjectURL(prev[idx].preview);
+      return prev.filter((_, i) => i !== idx);
+    });
+  };
+
+  return (
+    <div className="img-uploader">
+      <label className="form-field-label">
+        Proof Images
+        <span className="img-count-badge">{images.length}/{MAX_IMAGES}</span>
+      </label>
+
+      <div className="img-preview-row">
+        {images.map((img, idx) => (
+          <div key={idx} className="img-thumb-wrap">
+            <img src={img.preview} alt={`proof-${idx}`} className="img-thumb" />
+            <button
+              type="button"
+              className="img-remove-btn"
+              onClick={() => removeImage(idx)}
+              title="Remove"
+            >✕</button>
+          </div>
+        ))}
+
+        {images.length < MAX_IMAGES && (
+          <button
+            type="button"
+            className="img-add-slot"
+            onClick={() => inputRef.current?.click()}
+            title="Add image"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <rect x="3" y="3" width="18" height="18" rx="3"/>
+              <path d="M12 8v8M8 12h8"/>
+            </svg>
+            <span>Add photo</span>
+          </button>
+        )}
+      </div>
+
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        style={{ display: "none" }}
+        onChange={handleFiles}
+      />
+
+      <p className="img-hint">Up to {MAX_IMAGES} images as proof of the disaster</p>
+    </div>
+  );
+}
+
+// ── Upload images to Supabase Storage ────────────────────────────────────────
+async function uploadImages(imageObjs) {
+  const urls = [];
+  for (const { file } of imageObjs) {
+    const ext      = file.name.split(".").pop();
+    const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const { error } = await supabase.storage
+      .from("disaster-images")
+      .upload(filename, file, { cacheControl: "3600", upsert: false });
+
+    if (error) throw new Error("Image upload failed: " + error.message);
+
+    const { data } = supabase.storage
+      .from("disaster-images")
+      .getPublicUrl(filename);
+
+    urls.push(data.publicUrl);
+  }
+  return urls; // array of up to 3 public URLs
+}
+
 // ── Add / Edit form ───────────────────────────────────────────────────────────
-function DisasterForm({ title, coords, form, setForm, onSave, onCancel, saving, error }) {
+function DisasterForm({
+  title, coords, form, setForm,
+  images, setImages,
+  onSave, onCancel, saving, error,
+  showImageUpload = true,
+}) {
   return (
     <div className="add-form-overlay">
       <div className="add-form">
@@ -113,6 +214,11 @@ function DisasterForm({ title, coords, form, setForm, onSave, onCancel, saving, 
           </div>
         </div>
 
+        {/* Image uploader — only shown when adding, not editing */}
+        {showImageUpload && (
+          <ImageUploader images={images} setImages={setImages} />
+        )}
+
         {error && <p className="form-error">{error}</p>}
 
         <div className="form-actions">
@@ -126,6 +232,48 @@ function DisasterForm({ title, coords, form, setForm, onSave, onCancel, saving, 
   );
 }
 
+// ── Proof images viewer in detail card ───────────────────────────────────────
+function ProofImages({ disaster }) {
+  const urls = [
+    disaster.image_url_1,
+    disaster.image_url_2,
+    disaster.image_url_3,
+  ].filter(Boolean);
+
+  const [lightbox, setLightbox] = useState(null);
+
+  if (urls.length === 0) return null;
+
+  return (
+    <>
+      <div className="proof-images-section">
+        <p className="proof-images-label">📸 Proof Images</p>
+        <div className="proof-images-row">
+          {urls.map((url, i) => (
+            <img
+              key={i}
+              src={url}
+              alt={`proof-${i + 1}`}
+              className="proof-thumb"
+              onClick={() => setLightbox(url)}
+              title="Click to enlarge"
+            />
+          ))}
+        </div>
+      </div>
+
+      {lightbox && (
+        <div className="lightbox-backdrop" onClick={() => setLightbox(null)}>
+          <div className="lightbox-box" onClick={(e) => e.stopPropagation()}>
+            <button className="lightbox-close" onClick={() => setLightbox(null)}>✕</button>
+            <img src={lightbox} alt="proof-full" className="lightbox-img" />
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 export default function MapPage() {
   const [disasters,  setDisasters]  = useState([]);
@@ -133,12 +281,14 @@ export default function MapPage() {
   const [currentUID, setCurrentUID] = useState(null);
   const [search,     setSearch]     = useState("");
   const [loading,    setLoading]    = useState(true);
+  const { username } = useAuth({});
 
   // Add flow
   const [addMode,    setAddMode]    = useState(false);
   const [pendingPin, setPendingPin] = useState(null);
   const [showAdd,    setShowAdd]    = useState(false);
   const [addForm,    setAddForm]    = useState(EMPTY_FORM);
+  const [addImages,  setAddImages]  = useState([]);   // ← new
   const [addSaving,  setAddSaving]  = useState(false);
   const [addError,   setAddError]   = useState("");
 
@@ -152,15 +302,15 @@ export default function MapPage() {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting,      setDeleting]      = useState(false);
 
-  // ── Auth ────────────────────────────────────────────────────────────────────
+  // ── Auth ──────────────────────────────────────────────────────────────────
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setCurrentUID(session?.user?.id ?? null);
     });
   }, []);
 
-  // ── Fetch ───────────────────────────────────────────────────────────────────
-    const fetchDisasters = useCallback(async () => {
+  // ── Fetch ─────────────────────────────────────────────────────────────────
+  const fetchDisasters = useCallback(async () => {
     setLoading(true);
     try {
       const data = await disasterService.getAll();
@@ -172,25 +322,34 @@ export default function MapPage() {
       setLoading(false);
     }
   }, []);
+
   useEffect(() => { fetchDisasters(); }, [fetchDisasters]);
 
   const isOwner = selected?.created_by === currentUID;
 
-  // ── Add ─────────────────────────────────────────────────────────────────────
+  // ── Add ───────────────────────────────────────────────────────────────────
   const handleMapClick = useCallback((latlng) => {
     setPendingPin({ lat: latlng.lat, lng: latlng.lng });
     setAddForm(EMPTY_FORM);
+    setAddImages([]);
     setAddError("");
     setShowAdd(true);
   }, []);
 
-    const handleAdd = async () => {
+  const handleAdd = async () => {
     if (!addForm.title.trim())       { setAddError("Title is required.");       return; }
     if (!addForm.description.trim()) { setAddError("Description is required."); return; }
     setAddSaving(true); setAddError("");
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
+
+      // Upload images first (if any)
+      let imageUrls = [];
+      if (addImages.length > 0) {
+        imageUrls = await uploadImages(addImages);
+      }
+
       const data = await disasterService.create({
         title:          addForm.title.trim(),
         description:    addForm.description.trim(),
@@ -199,12 +358,17 @@ export default function MapPage() {
         latitude:       pendingPin.lat,
         longitude:      pendingPin.lng,
         created_by:     session?.user?.id ?? null,
+        image_url_1:    imageUrls[0] ?? null,
+        image_url_2:    imageUrls[1] ?? null,
+        image_url_3:    imageUrls[2] ?? null,
       });
+
       setDisasters((prev) => [data, ...prev]);
       setSelected(data);
       setPendingPin(null);
       setShowAdd(false);
       setAddMode(false);
+      setAddImages([]);
     } catch (err) {
       setAddError("Failed to save: " + err.message);
     } finally {
@@ -213,11 +377,14 @@ export default function MapPage() {
   };
 
   const cancelAdd = () => {
-    setPendingPin(null); setShowAdd(false);
-    setAddMode(false);   setAddError("");
+    setPendingPin(null);
+    setShowAdd(false);
+    setAddMode(false);
+    setAddError("");
+    setAddImages([]);
   };
 
-  // ── Edit ────────────────────────────────────────────────────────────────────
+  // ── Edit ──────────────────────────────────────────────────────────────────
   const openEdit = () => {
     setEditForm({
       title:          selected.title,
@@ -229,46 +396,45 @@ export default function MapPage() {
     setShowEdit(true);
   };
 
-const handleEdit = async () => {
-  if (!editForm.title.trim())       { setEditError("Title is required.");       return; }
-  if (!editForm.description.trim()) { setEditError("Description is required."); return; }
-  setEditSaving(true); setEditError("");
+  const handleEdit = async () => {
+    if (!editForm.title.trim())       { setEditError("Title is required.");       return; }
+    if (!editForm.description.trim()) { setEditError("Description is required."); return; }
+    setEditSaving(true); setEditError("");
 
-  try {
-    const data = await disasterService.update(selected.id, {
-      title:          editForm.title.trim(),
-      description:    editForm.description.trim(),
-      severity_level: editForm.severity_level,
-      status:         editForm.status,
-    });
-    setDisasters((prev) => prev.map((d) => d.id === data.id ? data : d));
-    setSelected(data);
-    setShowEdit(false);
-  } catch (err) {
-    setEditError("Failed to update: " + err.message);
-  } finally {
-    setEditSaving(false);
-  }
-};
+    try {
+      const data = await disasterService.update(selected.id, {
+        title:          editForm.title.trim(),
+        description:    editForm.description.trim(),
+        severity_level: editForm.severity_level,
+        status:         editForm.status,
+      });
+      setDisasters((prev) => prev.map((d) => d.id === data.id ? data : d));
+      setSelected(data);
+      setShowEdit(false);
+    } catch (err) {
+      setEditError("Failed to update: " + err.message);
+    } finally {
+      setEditSaving(false);
+    }
+  };
 
-  // ── Delete ──────────────────────────────────────────────────────────────────
+  // ── Delete ────────────────────────────────────────────────────────────────
   const handleDelete = async () => {
-  setDeleting(true);
+    setDeleting(true);
+    try {
+      await disasterService.remove(selected.id);
+      const remaining = disasters.filter((d) => d.id !== selected.id);
+      setDisasters(remaining);
+      setSelected(remaining[0] ?? null);
+      setConfirmDelete(false);
+    } catch (err) {
+      alert("Failed to delete: " + err.message);
+    } finally {
+      setDeleting(false);
+    }
+  };
 
-  try {
-    await disasterService.remove(selected.id);
-    const remaining = disasters.filter((d) => d.id !== selected.id);
-    setDisasters(remaining);
-    setSelected(remaining[0] ?? null);
-    setConfirmDelete(false);
-  } catch (err) {
-    alert("Failed to delete: " + err.message);
-  } finally {
-    setDeleting(false);
-  }
-};
-
-  // ── Filtered list ────────────────────────────────────────────────────────────
+  // ── Filtered list ─────────────────────────────────────────────────────────
   const filtered = disasters.filter(
     (d) =>
       d.title?.toLowerCase().includes(search.toLowerCase()) ||
@@ -321,7 +487,9 @@ const handleEdit = async () => {
                 <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
               </svg>
             </div>
-            <div className="avatar">US</div>
+            <div className="avatar">
+              {username ? username.slice(0, 2).toUpperCase() : "US"}
+            </div>
           </div>
         </div>
 
@@ -355,7 +523,6 @@ const handleEdit = async () => {
                   <span className={`status-chip status-${selected.status?.toLowerCase()}`}>
                     {selected.status}
                   </span>
-                  {/* Edit / Delete — only visible to the owner */}
                   {isOwner && (
                     <div className="owner-actions">
                       <button className="action-btn edit-btn" onClick={openEdit} title="Edit">
@@ -387,12 +554,16 @@ const handleEdit = async () => {
 
                 <p className="card-date">{formatDate(selected.created_at)}</p>
                 <p className="card-description">{selected.description}</p>
+
                 <div className="card-meta">
                   <p>
                     <span className="meta-label">Coordinates:</span>{" "}
                     {selected.latitude?.toFixed(5)}, {selected.longitude?.toFixed(5)}
                   </p>
                 </div>
+
+                {/* ── Proof images ── */}
+                <ProofImages disaster={selected} />
 
                 <button className="donate-btn">DONATE</button>
               </div>
@@ -417,7 +588,6 @@ const handleEdit = async () => {
                     <span className="rli-severity" style={{ color: getSeverityColor(d.severity_level) }}>
                       {d.severity_level}
                     </span>
-                    {/* Small owner indicator */}
                     {d.created_by === currentUID && (
                       <span className="rli-mine" title="You created this">✦</span>
                     )}
@@ -478,24 +648,30 @@ const handleEdit = async () => {
                 coords={pendingPin}
                 form={addForm}
                 setForm={setAddForm}
+                images={addImages}
+                setImages={setAddImages}
                 onSave={handleAdd}
                 onCancel={cancelAdd}
                 saving={addSaving}
                 error={addError}
+                showImageUpload={true}
               />
             )}
 
-            {/* Edit form */}
+            {/* Edit form — no image upload */}
             {showEdit && (
               <DisasterForm
                 title="Edit Disaster Point"
                 coords={null}
                 form={editForm}
                 setForm={setEditForm}
+                images={[]}
+                setImages={() => {}}
                 onSave={handleEdit}
                 onCancel={() => setShowEdit(false)}
                 saving={editSaving}
                 error={editError}
+                showImageUpload={false}
               />
             )}
 

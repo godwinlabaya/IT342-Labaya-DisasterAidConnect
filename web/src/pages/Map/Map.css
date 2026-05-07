@@ -721,3 +721,233 @@
   .map-panel { width: 100%; max-height: 44vh; border-right: none; border-bottom: 1px solid var(--gray-200); }
   .add-form  { width: 270px; }
 }
+
+/* Make the left panel scrollable */
+.map-panel {
+  overflow-y: hidden;
+  padding: 14px 12px;
+  gap: 10px;
+}
+
+/* Keep the detail card visible and not squished */
+.request-detail-card {
+  flex-shrink: 0;
+}
+
+.request-list {
+  flex: 1;             /* list takes remaining space */
+  overflow-y: auto;    /* ONLY the list scrolls */
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-right: 2px;  /* breathing room for scrollbar */
+  min-height: 0;       /* critical — lets flex child shrink below content size */
+}
+
+/* Thin scrollbar for the list */
+.request-list::-webkit-scrollbar       { width: 3px; }
+.request-list::-webkit-scrollbar-track { background: transparent; }
+.request-list::-webkit-scrollbar-thumb {
+  background: var(--gray-300);
+  border-radius: 4px;
+}
+.request-list::-webkit-scrollbar-thumb:hover {
+  background: var(--gray-400);
+}
+
+/* ── Add these to the bottom of your Map.css ── */
+
+/* ── Image Uploader ──────────────────────────────────────── */
+
+.img-uploader {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-field-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gray-600);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.img-count-badge {
+  font-size: 10px;
+  background: var(--gray-100);
+  color: var(--gray-500);
+  padding: 1px 6px;
+  border-radius: 8px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.img-preview-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.img-thumb-wrap {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1.5px solid var(--gray-200);
+  flex-shrink: 0;
+}
+
+.img-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.img-remove-btn {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  font-size: 9px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: background 0.15s;
+}
+.img-remove-btn:hover { background: rgba(220, 38, 38, 0.85); }
+
+.img-add-slot {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-sm);
+  border: 1.5px dashed var(--gray-300);
+  background: var(--gray-50);
+  color: var(--gray-400);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 9px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+.img-add-slot:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: var(--blue-light);
+}
+
+.img-hint {
+  font-size: 10.5px;
+  color: var(--gray-400);
+  margin: 0;
+  font-style: italic;
+}
+
+/* ── Proof Images in detail card ─────────────────────────── */
+
+.proof-images-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.proof-images-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gray-500);
+  margin: 0;
+  letter-spacing: 0.03em;
+}
+
+.proof-images-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.proof-thumb {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--gray-200);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+.proof-thumb:hover {
+  border-color: var(--blue);
+  transform: scale(1.04);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+/* ── Lightbox ────────────────────────────────────────────── */
+
+.lightbox-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.15s ease;
+}
+
+.lightbox-box {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+  animation: popIn 0.2s ease;
+}
+
+.lightbox-img {
+  display: block;
+  max-width: 90vw;
+  max-height: 85vh;
+  object-fit: contain;
+  background: #000;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  color: white;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+  z-index: 1;
+}
+.lightbox-close:hover { background: rgba(220, 38, 38, 0.8); }

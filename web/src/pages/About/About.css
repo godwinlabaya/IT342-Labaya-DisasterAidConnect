@@ -1,0 +1,260 @@
+/* ── Layout ───────────────────────────────────────────────────────────────── */
+.about-body {
+  padding: 0 0 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* ── Hero ─────────────────────────────────────────────────────────────────── */
+.about-hero {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.about-hero-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #eff6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.about-platform-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #9ca3af;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.about-platform-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.about-tagline {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.7;
+  margin: 0;
+  max-width: 640px;
+}
+
+/* ── Stats ────────────────────────────────────────────────────────────────── */
+.about-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.about-stat {
+  background: #f9fafb;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.about-stat-label {
+  font-size: 13px;
+  color: #9ca3af;
+  margin: 0 0 4px;
+}
+
+.about-stat-value {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.about-stat-green {
+  color: #16a34a;
+}
+
+/* ── Feature cards ────────────────────────────────────────────────────────── */
+.about-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.about-feature-card {
+  background: #ffffff;
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+}
+
+.about-feature-icon {
+  font-size: 20px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.about-feature-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 6px;
+}
+
+.about-feature-desc {
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── Shared card ──────────────────────────────────────────────────────────── */
+.about-card {
+  background: #ffffff;
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.about-card-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #9ca3af;
+  margin: 0 0 1.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ── Developer card ───────────────────────────────────────────────────────── */
+.about-dev-inner {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.about-dev-photo-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.about-dev-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #eff6ff;
+  border: 1px solid #e0e7ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.about-dev-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.about-dev-initials {
+  font-size: 36px;
+  font-weight: 600;
+  color: #1d4ed8;
+}
+
+.about-dev-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+  text-align: center;
+}
+
+.about-dev-sub {
+  font-size: 13px;
+  color: #9ca3af;
+  margin: 0;
+  text-align: center;
+}
+
+.about-dev-info {
+  flex: 1;
+  min-width: 220px;
+}
+
+.about-dev-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #9ca3af;
+  margin: 0 0 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+/* ── Pills ────────────────────────────────────────────────────────────────── */
+.about-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.about-pill {
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid #f0f0f0;
+}
+
+.about-pill-blue {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.about-pill-gray {
+  background: #f9fafb;
+  color: #374151;
+}
+
+/* ── Bio ──────────────────────────────────────────────────────────────────── */
+.about-dev-bio {
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ── Project info ─────────────────────────────────────────────────────────── */
+.about-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.about-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+}
+
+.about-info-row-border {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.about-info-label {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.about-info-value {
+  font-size: 13px;
+  color: #111827;
+}
