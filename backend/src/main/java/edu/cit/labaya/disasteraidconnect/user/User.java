@@ -1,12 +1,8 @@
-package edu.cit.labaya.disasteraidconnect.entity;
+package edu.cit.labaya.disasteraidconnect.user;
 
+import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.UUID;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
@@ -14,7 +10,7 @@ public class User {
 
     @Id
     @Column(columnDefinition = "uuid", updatable = false, nullable = false)
-    private UUID id;               // Same ID as auth.users — no generation here
+    private UUID id;               // Mirrors auth.users — no generation
 
     @Column(nullable = false)
     private String username;
@@ -34,7 +30,7 @@ public class User {
     @Column(name = "security_answer", nullable = false)
     private String securityAnswer;
 
-    @Column(nullable = true)
+    @Column
     private String role = "user";
 
     @Column(name = "created_at", updatable = false,
