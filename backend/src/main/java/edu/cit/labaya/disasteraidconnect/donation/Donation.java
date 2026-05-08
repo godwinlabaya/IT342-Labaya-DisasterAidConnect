@@ -1,15 +1,9 @@
-package edu.cit.labaya.disasteraidconnect.entity;
+package edu.cit.labaya.disasteraidconnect.donation;
 
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "donations")
@@ -21,13 +15,13 @@ public class Donation {
     private UUID id;
 
     @Column(name = "user_id", columnDefinition = "uuid")
-    private UUID userId;            // FK → users(id), nullable (set null on delete)
+    private UUID userId;
 
     @Column(name = "disaster_id", columnDefinition = "uuid")
-    private UUID disasterId;        // FK → disasters(id), nullable (set null on delete)
+    private UUID disasterId;
 
     @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal amount;      // must be > 0
+    private BigDecimal amount;
 
     @Column(nullable = false)
     private String status = "Pending";  // Pending | Completed | Failed | Refunded
