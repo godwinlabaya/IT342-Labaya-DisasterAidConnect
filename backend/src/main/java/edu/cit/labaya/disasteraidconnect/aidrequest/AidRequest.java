@@ -1,14 +1,8 @@
-package edu.cit.labaya.disasteraidconnect.entity;
+package edu.cit.labaya.disasteraidconnect.aidrequest;
 
+import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.UUID;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "aid_requests")
@@ -20,16 +14,16 @@ public class AidRequest {
     private UUID id;
 
     @Column(name = "user_id", columnDefinition = "uuid")
-    private UUID userId;            // FK → users(id)
+    private UUID userId;
 
     @Column(name = "disaster_id", columnDefinition = "uuid")
-    private UUID disasterId;        // FK → disasters(id)
+    private UUID disasterId;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "aid_type", nullable = false)
-    private String aidType;         // e.g. Food, Water, Medical, Shelter
+    private String aidType;         // Food | Water | Medical | Shelter
 
     @Column
     private String quantity;
@@ -65,5 +59,5 @@ public class AidRequest {
     public void   setStatus(String status)           { this.status = status; }
 
     public OffsetDateTime getCreatedAt()             { return createdAt; }
-    public void setCreatedAt(OffsetDateTime t)       { this.createdAt = t; }
+    public void           setCreatedAt(OffsetDateTime t) { this.createdAt = t; }
 }

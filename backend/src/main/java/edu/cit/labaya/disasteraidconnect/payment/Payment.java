@@ -1,15 +1,9 @@
-package edu.cit.labaya.disasteraidconnect.entity;
+package edu.cit.labaya.disasteraidconnect.payment;
 
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "payments")
@@ -21,23 +15,23 @@ public class Payment {
     private UUID id;
 
     @Column(name = "donation_id", columnDefinition = "uuid")
-    private UUID donationId;        // FK → donations(id), CASCADE on delete
+    private UUID donationId;
 
     @Column(name = "payment_date",
             columnDefinition = "timestamp with time zone default now()")
     private OffsetDateTime paymentDate;
 
     @Column(name = "payment_method", nullable = false)
-    private String paymentMethod;   // e.g. GCash, PayMaya, Credit Card
+    private String paymentMethod;
 
     @Column(name = "payment_status", nullable = false)
-    private String paymentStatus = "Pending";  // Pending | Completed | Failed | Refunded
+    private String paymentStatus = "Pending";
 
     @Column(name = "processing_fee", precision = 10, scale = 2)
     private BigDecimal processingFee = BigDecimal.ZERO;
 
     @Column(name = "total_amount", nullable = false, precision = 10, scale = 2)
-    private BigDecimal totalAmount;  // must be > 0
+    private BigDecimal totalAmount;
 
     @Column(name = "transaction_reference", unique = true)
     private String transactionReference;
@@ -54,10 +48,10 @@ public class Payment {
     public void           setPaymentDate(OffsetDateTime t)     { this.paymentDate = t; }
 
     public String getPaymentMethod()                           { return paymentMethod; }
-    public void   setPaymentMethod(String paymentMethod)       { this.paymentMethod = paymentMethod; }
+    public void   setPaymentMethod(String m)                   { this.paymentMethod = m; }
 
     public String getPaymentStatus()                           { return paymentStatus; }
-    public void   setPaymentStatus(String paymentStatus)       { this.paymentStatus = paymentStatus; }
+    public void   setPaymentStatus(String s)                   { this.paymentStatus = s; }
 
     public BigDecimal getProcessingFee()                       { return processingFee; }
     public void       setProcessingFee(BigDecimal fee)         { this.processingFee = fee; }

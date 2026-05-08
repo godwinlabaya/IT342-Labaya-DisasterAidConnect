@@ -1,13 +1,9 @@
-package edu.cit.labaya.disasteraidconnect.service;
-
-import java.util.List;
+package edu.cit.labaya.disasteraidconnect.disaster;
 
 import org.springframework.stereotype.Service;
 
-import edu.cit.labaya.disasteraidconnect.dto.DisasterRequestDTO;
-import edu.cit.labaya.disasteraidconnect.dto.DisasterResponseDTO;
-import edu.cit.labaya.disasteraidconnect.entity.Disaster;
-import edu.cit.labaya.disasteraidconnect.repository.DisasterRepository;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class DisasterServiceImpl implements DisasterService {
@@ -29,7 +25,7 @@ public class DisasterServiceImpl implements DisasterService {
     }
 
     @Override
-    public List<DisasterResponseDTO> getByUser(String userId) {
+    public List<DisasterResponseDTO> getByUser(UUID userId) {
         return repo.findByCreatedByOrderByCreatedAtDesc(userId)
                    .stream()
                    .map(DisasterResponseDTO::from)
@@ -37,7 +33,7 @@ public class DisasterServiceImpl implements DisasterService {
     }
 
     @Override
-    public DisasterResponseDTO getById(String id) {
+    public DisasterResponseDTO getById(UUID id) {
         Disaster d = repo.findById(id)
             .orElseThrow(() -> new RuntimeException("Disaster not found: " + id));
         return DisasterResponseDTO.from(d);
@@ -55,7 +51,7 @@ public class DisasterServiceImpl implements DisasterService {
     // ── UPDATE ─────────────────────────────────────────────────────────────────
 
     @Override
-    public DisasterResponseDTO update(String id, DisasterRequestDTO dto) {
+    public DisasterResponseDTO update(UUID id, DisasterRequestDTO dto) {
         Disaster d = repo.findById(id)
             .orElseThrow(() -> new RuntimeException("Disaster not found: " + id));
         applyDto(dto, d);
@@ -65,7 +61,7 @@ public class DisasterServiceImpl implements DisasterService {
     // ── DELETE ─────────────────────────────────────────────────────────────────
 
     @Override
-    public void delete(String id) {
+    public void delete(UUID id) {
         if (!repo.existsById(id)) throw new RuntimeException("Disaster not found: " + id);
         repo.deleteById(id);
     }
@@ -80,5 +76,8 @@ public class DisasterServiceImpl implements DisasterService {
         d.setLatitude(dto.getLatitude());
         d.setLongitude(dto.getLongitude());
         d.setCreatedBy(dto.getCreatedBy());
+        d.setImageUrl1(dto.getImageUrl1());
+        d.setImageUrl2(dto.getImageUrl2());
+        d.setImageUrl3(dto.getImageUrl3());
     }
 }
