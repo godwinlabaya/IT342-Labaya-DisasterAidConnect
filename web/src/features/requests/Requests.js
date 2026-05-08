@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../../components/Sidebar";
+import Sidebar from "../../../shared/components/Sidebar";
 import "./Requests.css";
 import { supabase } from "../../supabaseClient";
 import { getSeverityColor } from "../../utils/iconFactory";
