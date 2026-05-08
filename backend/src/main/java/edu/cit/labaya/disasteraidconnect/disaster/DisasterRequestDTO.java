@@ -1,6 +1,7 @@
-package edu.cit.labaya.disasteraidconnect.dto;
+package edu.cit.labaya.disasteraidconnect.disaster;
 
 import jakarta.validation.constraints.NotBlank;
+import java.util.UUID;
 
 public class DisasterRequestDTO {
 
@@ -14,7 +15,12 @@ public class DisasterRequestDTO {
     private String status        = "Active";
     private Double latitude;
     private Double longitude;
-    private String createdBy;   
+    private UUID   createdBy;
+    private String imageUrl1;
+    private String imageUrl2;
+    private String imageUrl3;
+
+    // ── Getters & Setters ──────────────────────────────────────────────────────
 
     public String getTitle()                     { return title; }
     public void   setTitle(String title)         { this.title = title; }
@@ -34,6 +40,15 @@ public class DisasterRequestDTO {
     public Double getLongitude()                 { return longitude; }
     public void   setLongitude(Double lng)       { this.longitude = lng; }
 
-    public String getCreatedBy()                 { return createdBy; }
-    public void   setCreatedBy(String uid)       { this.createdBy = uid; }
+    public UUID getCreatedBy()                   { return createdBy; }
+    public void setCreatedBy(UUID uid)           { this.createdBy = uid; }
+
+    public String getImageUrl1()                 { return imageUrl1; }
+    public void   setImageUrl1(String u)         { this.imageUrl1 = u; }
+
+    public String getImageUrl2()                 { return imageUrl2; }
+    public void   setImageUrl2(String u)         { this.imageUrl2 = u; }
+
+    public String getImageUrl3()                 { return imageUrl3; }
+    public void   setImageUrl3(String u)         { this.imageUrl3 = u; }
 }

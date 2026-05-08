@@ -1,21 +1,19 @@
-package edu.cit.labaya.disasteraidconnect.service;
+package edu.cit.labaya.disasteraidconnect.disaster;
 
 import java.util.List;
-
-import edu.cit.labaya.disasteraidconnect.dto.DisasterRequestDTO;
-import edu.cit.labaya.disasteraidconnect.dto.DisasterResponseDTO;
+import java.util.UUID;
 
 public interface DisasterService {
 
     List<DisasterResponseDTO> getAll();
 
-    List<DisasterResponseDTO> getByUser(String userId);
+    List<DisasterResponseDTO> getByUser(UUID userId);
 
-    DisasterResponseDTO getById(String id);
+    DisasterResponseDTO getById(UUID id);
 
     DisasterResponseDTO create(DisasterRequestDTO dto);
 
-    DisasterResponseDTO update(String id, DisasterRequestDTO dto);
+    DisasterResponseDTO update(UUID id, DisasterRequestDTO dto);
 
-    void delete(String id);
+    void delete(UUID id);
 }

@@ -1,21 +1,17 @@
-package edu.cit.labaya.disasteraidconnect.repository;
-
-import java.util.List;
+package edu.cit.labaya.disasteraidconnect.disaster;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import edu.cit.labaya.disasteraidconnect.entity.Disaster;
+import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface DisasterRepository extends JpaRepository<Disaster, String> {
+public interface DisasterRepository extends JpaRepository<Disaster, UUID> {
 
-    // Mirrors disasterService.getByUser(currentUID) used in Requests.js
-    List<Disaster> findByCreatedByOrderByCreatedAtDesc(String createdBy);
+    List<Disaster> findByCreatedByOrderByCreatedAtDesc(UUID createdBy);
 
-    // Mirrors disasterService.getAll() used in Map.js
     List<Disaster> findAllByOrderByCreatedAtDesc();
 
-    // Filter by status (Active / Monitoring / Resolved)
     List<Disaster> findByStatusOrderByCreatedAtDesc(String status);
 }

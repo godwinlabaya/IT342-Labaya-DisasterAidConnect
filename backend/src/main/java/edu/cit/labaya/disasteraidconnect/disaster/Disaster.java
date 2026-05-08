@@ -1,4 +1,4 @@
-package edu.cit.labaya.disasteraidconnect.entity;
+package edu.cit.labaya.disasteraidconnect.disaster;
 
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
@@ -20,10 +20,10 @@ public class Disaster {
     private String description;
 
     @Column(name = "severity_level", nullable = false)
-    private String severityLevel = "Low";   // Low | Medium | High | Critical
+    private String severityLevel = "Low";
 
     @Column(nullable = false)
-    private String status = "Active";       // Active | Monitoring | Resolved
+    private String status = "Active";
 
     @Column(nullable = false)
     private Double latitude;
@@ -32,7 +32,16 @@ public class Disaster {
     private Double longitude;
 
     @Column(name = "created_by", columnDefinition = "uuid")
-    private UUID createdBy;                 // FK → users(id), nullable
+    private UUID createdBy;
+
+    @Column(name = "image_url_1")
+    private String imageUrl1;
+
+    @Column(name = "image_url_2")
+    private String imageUrl2;
+
+    @Column(name = "image_url_3")
+    private String imageUrl3;
 
     @Column(name = "created_at", updatable = false,
             columnDefinition = "timestamp with time zone default now()")
@@ -40,30 +49,39 @@ public class Disaster {
 
     // ── Getters & Setters ──────────────────────────────────────────────────────
 
-    public UUID getId()                          { return id; }
-    public void setId(UUID id)                   { this.id = id; }
+    public UUID getId()                              { return id; }
+    public void setId(UUID id)                       { this.id = id; }
 
-    public String getTitle()                     { return title; }
-    public void   setTitle(String title)         { this.title = title; }
+    public String getTitle()                         { return title; }
+    public void   setTitle(String title)             { this.title = title; }
 
-    public String getDescription()               { return description; }
-    public void   setDescription(String d)       { this.description = d; }
+    public String getDescription()                   { return description; }
+    public void   setDescription(String d)           { this.description = d; }
 
-    public String getSeverityLevel()             { return severityLevel; }
-    public void   setSeverityLevel(String s)     { this.severityLevel = s; }
+    public String getSeverityLevel()                 { return severityLevel; }
+    public void   setSeverityLevel(String s)         { this.severityLevel = s; }
 
-    public String getStatus()                    { return status; }
-    public void   setStatus(String status)       { this.status = status; }
+    public String getStatus()                        { return status; }
+    public void   setStatus(String status)           { this.status = status; }
 
-    public Double getLatitude()                  { return latitude; }
-    public void   setLatitude(Double lat)        { this.latitude = lat; }
+    public Double getLatitude()                      { return latitude; }
+    public void   setLatitude(Double lat)            { this.latitude = lat; }
 
-    public Double getLongitude()                 { return longitude; }
-    public void   setLongitude(Double lng)       { this.longitude = lng; }
+    public Double getLongitude()                     { return longitude; }
+    public void   setLongitude(Double lng)           { this.longitude = lng; }
 
-    public UUID getCreatedBy()                   { return createdBy; }
-    public void setCreatedBy(UUID uid)           { this.createdBy = uid; }
+    public UUID getCreatedBy()                       { return createdBy; }
+    public void setCreatedBy(UUID uid)               { this.createdBy = uid; }
 
-    public OffsetDateTime getCreatedAt()         { return createdAt; }
+    public String getImageUrl1()                     { return imageUrl1; }
+    public void   setImageUrl1(String u)             { this.imageUrl1 = u; }
+
+    public String getImageUrl2()                     { return imageUrl2; }
+    public void   setImageUrl2(String u)             { this.imageUrl2 = u; }
+
+    public String getImageUrl3()                     { return imageUrl3; }
+    public void   setImageUrl3(String u)             { this.imageUrl3 = u; }
+
+    public OffsetDateTime getCreatedAt()             { return createdAt; }
     public void           setCreatedAt(OffsetDateTime t) { this.createdAt = t; }
 }
