@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { supabase } from "../../src/supabaseClient";
+import { supabase } from "../../supabaseClient";
 import "./Sidebar.css";
 
 const menuItems = [
