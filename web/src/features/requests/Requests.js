@@ -1,10 +1,10 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../../../shared/components/Sidebar";
+import Sidebar from "../../shared/components/Sidebar";
 import "./Requests.css";
 import { supabase } from "../../supabaseClient";
-import { getSeverityColor } from "../../utils/iconFactory";
-import disasterService from "../../services/disasterService";
+import { getSeverityColor } from "../disaster/iconFactory";
+import disasterService from "../disaster/disasterService";
 
 const STATUS_TABS  = ["All", "Active", "Monitoring", "Resolved"];
 const PAGE_SIZE    = 6; // cards per page

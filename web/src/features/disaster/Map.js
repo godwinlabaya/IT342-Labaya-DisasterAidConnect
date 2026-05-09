@@ -2,12 +2,12 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import Sidebar from "../../components/Sidebar";
+import Sidebar from "../../shared/components/Sidebar";
 import "./Map.css";
 import { supabase } from "../../supabaseClient";
-import { createMarkerIcon, getSeverityColor } from "../../utils/iconFactory";
-import disasterService from "../../services/disasterService";
-import { useAuth } from "../../hooks/useAuth";
+import { createMarkerIcon, getSeverityColor } from "./iconFactory";
+import disasterService from "./disasterService";
+import { useAuth } from "../auth/useAuth";
 
 // Fix broken default marker icons in webpack/CRA
 delete L.Icon.Default.prototype._getIconUrl;

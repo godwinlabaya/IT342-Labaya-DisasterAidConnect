@@ -1,5 +1,5 @@
 import Sidebar from "../../components/Sidebar";
-import "../Dashboard/Dashboard.css";
+import "../../../features/dashboard/Dashboard.css";
 import "./About.css";
 
 // ── Replace the src below with your actual photo import ──────────────────────

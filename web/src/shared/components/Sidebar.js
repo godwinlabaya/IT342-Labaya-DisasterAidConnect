@@ -3,22 +3,26 @@ import { supabase } from "../../supabaseClient";
 import "./Sidebar.css";
 
 const menuItems = [
-  { icon: "🏠", label: "Dashboard", path: "/dashboard" },
-  { icon: "🗺️", label: "Map", path: "/map" },
-  { icon: "📝", label: "Requests", path: "/requests" },
-  { icon: "🎁", label: "Donations", path: "/donations" },
-  { icon: "👥", label: "About Us", path: "/about" },
+  { icon: "🏠", label: "Dashboard",    path: "/dashboard" },
+  { icon: "🗺️", label: "Map",          path: "/map" },
+  { icon: "📝", label: "Requests",     path: "/requests" },
+  { icon: "🎁", label: "Donations",    path: "/donations" },
+  { icon: "👥", label: "About Us",     path: "/about" },
   { icon: "❓", label: "Help & Support", path: "/help" },
 ];
 
-export default function Sidebar() {
+// onLogout is optional — if passed (e.g. from Dashboard), it uses that.
+// Otherwise falls back to the default logout (for Map, Requests, etc.)
+export default function Sidebar({ onLogout }) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const logout = async () => {
+  const defaultLogout = async () => {
     await supabase.auth.signOut();
     navigate("/");
   };
+
+  const handleLogout = onLogout ?? defaultLogout;
 
   return (
     <div className="sidebar">
@@ -42,7 +46,7 @@ export default function Sidebar() {
       </ul>
 
       <div className="sidebar-footer">
-        <button className="logout" onClick={logout}>
+        <button className="logout" onClick={handleLogout}>
           <span>🚪</span>
           <span>Logout</span>
         </button>

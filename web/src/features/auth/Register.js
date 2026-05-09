@@ -1,7 +1,18 @@
 import { useState } from "react";
-import "./Register.css";  // ← Make sure this path is correct
+import "./Register.css";
 import { supabase } from "../../supabaseClient";
 import { Link, useNavigate } from "react-router-dom";
+
+// ── Toast component ───────────────────────────────────────────────────────────
+function Toast({ message, type }) {
+  if (!message) return null;
+  return (
+    <div className={`toast toast-${type}`}>
+      <span className="toast-icon">{type === "success" ? "✅" : "❌"}</span>
+      <span>{message}</span>
+    </div>
+  );
+}
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -12,8 +23,13 @@ export default function Register() {
     securityQuestion: "",
     securityAnswer: ""
   });
-
+  const [toast, setToast] = useState({ message: "", type: "" });
   const navigate = useNavigate();
+
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+    setTimeout(() => setToast({ message: "", type: "" }), 3000);
+  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -23,30 +39,24 @@ export default function Register() {
     e.preventDefault();
 
     if (form.password !== form.confirmPassword) {
-      alert("Passwords do not match");
+      showToast("Passwords do not match.", "error");
       return;
     }
 
-    const passwordRegex =
-    /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/
-
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
     if (!passwordRegex.test(form.password)) {
-      alert("Password must be at least 8 characters long and contain an uppercase letter and a special character.");
+      showToast("Password must be 8+ characters with an uppercase letter and special character.", "error");
       return;
     }
 
     const { data, error } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
-      options: {
-        data: {
-          username: form.username,
-        },
-      },
+      options: { data: { username: form.username } },
     });
-    
+
     if (error) {
-      alert(error.message);
+      showToast(error.message, "error");
       return;
     }
 
@@ -63,26 +73,26 @@ export default function Register() {
       ]);
 
       if (insertError) {
-        alert(insertError.message);
+        showToast(insertError.message, "error");
         return;
       }
 
-      alert("Succesfully registered!");
-      navigate("/");
+      showToast("Account created successfully! Redirecting to login…", "success");
+      setTimeout(() => navigate("/"), 2000);
     }
   };
 
   return (
     <div className="register-container">
 
+      {/* ── Toast ── */}
+      <Toast message={toast.message} type={toast.type} />
+
       {/* LEFT PANEL */}
       <div className="register-left">
-
         <div className="brand">
           <div className="logo-box"></div>
-          <h1>
-            <span className="blue">DISASTER</span>AIDCONNECT
-          </h1>
+          <h1><span className="blue">DISASTER</span>AIDCONNECT</h1>
         </div>
 
         <h2>Transform Crisis Into Coordinated Action</h2>
@@ -94,7 +104,6 @@ export default function Register() {
         </p>
 
         <div className="features">
-
           <div className="feature">
             <div className="icon-box"></div>
             <div>
@@ -102,7 +111,6 @@ export default function Register() {
               <p>Manage requests, track aid distribution, and monitor response progress in one unified platform.</p>
             </div>
           </div>
-
           <div className="feature">
             <div className="icon-box"></div>
             <div>
@@ -110,7 +118,6 @@ export default function Register() {
               <p>Bring together certified responders, NGOs, and local volunteers to work seamlessly during emergencies.</p>
             </div>
           </div>
-
           <div className="feature">
             <div className="icon-box"></div>
             <div>
@@ -118,101 +125,50 @@ export default function Register() {
               <p>Match supplies, shelter, and medical assistance with communities in urgent need.</p>
             </div>
           </div>
-
         </div>
-
       </div>
 
       {/* RIGHT PANEL */}
       <div className="register-right">
-
         <div className="register-card">
-
           <h2>Create Account</h2>
           <p className="subtitle">Join DisasterAidConnect and start your journey</p>
 
           <form onSubmit={handleSubmit}>
-
             <div>
               <label>Username</label>
-              <input
-                name="username"
-                placeholder="Your name"
-                onChange={handleChange}
-                required
-              />
+              <input name="username" placeholder="Your name" onChange={handleChange} required />
             </div>
-
             <div>
               <label>Email</label>
-              <input
-                name="email"
-                type="email"
-                placeholder="you@email.com"
-                onChange={handleChange}
-                required
-              />
+              <input name="email" type="email" placeholder="you@email.com" onChange={handleChange} required />
             </div>
-
             <div>
               <label>Password</label>
-              <input
-                name="password"
-                type="password"
-                placeholder="••••••••••••"
-                onChange={handleChange}
-                required
-                minLength="8"
-              />
+              <input name="password" type="password" placeholder="••••••••••••" onChange={handleChange} required minLength="8" />
             </div>
-
             <div>
               <label>Confirm Password</label>
-              <input
-                name="confirmPassword"
-                type="password"
-                placeholder="••••••••••••"
-                onChange={handleChange}
-                required
-              />
+              <input name="confirmPassword" type="password" placeholder="••••••••••••" onChange={handleChange} required />
             </div>
-
             <div>
               <label>Security Question (for password recovery)</label>
-              <input
-                name="securityQuestion"
-                placeholder="What is your mother's maiden name?"
-                onChange={handleChange}
-                required
-              />
+              <input name="securityQuestion" placeholder="What is your mother's maiden name?" onChange={handleChange} required />
             </div>
-
             <div>
               <label>Answer to Security Question</label>
-              <input
-                name="securityAnswer"
-                placeholder="Your answer (remember this)"
-                onChange={handleChange}
-                required
-              />
+              <input name="securityAnswer" placeholder="Your answer (remember this)" onChange={handleChange} required />
             </div>
-
             <button type="submit">SIGN UP</button>
-
           </form>
 
-          <div className="divider">
-            <span>OR</span>
-          </div>
+          <div className="divider"><span>OR</span></div>
 
           <p className="login-text">
             Already have an account? <Link to="/">Log in</Link>
           </p>
-
         </div>
-
       </div>
-
     </div>
   );
 }

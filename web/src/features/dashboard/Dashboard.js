@@ -2,9 +2,22 @@ import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./Dashboard.css";
 import { supabase } from "../../supabaseClient";
-import { useAuth } from "../../hooks/useAuth";
-import disasterService from "../../services/disasterService";
+import { useAuth } from "../auth/useAuth";
+import disasterService from "../disaster/disasterService";
+import Sidebar from "../../shared/components/Sidebar";
 
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function Toast({ message, type }) {
+  if (!message) return null;
+  return (
+    <div className={`toast toast-${type}`}>
+      <span className="toast-icon">{type === "success" ? "✅" : "❌"}</span>
+      <span>{message}</span>
+    </div>
+  );
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
 function getSeverityColor(level) {
   if (level === "Critical") return { bg: "#fee2e2", text: "#991b1b", border: "#fca5a5" };
   if (level === "High")     return { bg: "#ffedd5", text: "#9a3412", border: "#fdba74" };
@@ -17,6 +30,13 @@ function getStatusStyle(status) {
   if (status === "Monitoring") return { bg: "#fef3c7", text: "#92400e", dot: "#d97706" };
   if (status === "Resolved")   return { bg: "#e0e7ff", text: "#3730a3", dot: "#6366f1" };
   return                              { bg: "#f3f4f6", text: "#6b7280", dot: "#9ca3af" };
+}
+
+function getDonationStatusStyle(status) {
+  if (status === "Completed") return { bg: "#dcfce7", text: "#166534" };
+  if (status === "Failed")    return { bg: "#fee2e2", text: "#991b1b" };
+  if (status === "Refunded")  return { bg: "#e0e7ff", text: "#3730a3" };
+  return                             { bg: "#fef9c3", text: "#854d0e" };
 }
 
 function formatDate(iso) {
@@ -33,15 +53,8 @@ function formatAmount(amount) {
   }).format(amount);
 }
 
-function getDonationStatusStyle(status) {
-  if (status === "Completed") return { bg: "#dcfce7", text: "#166534" };
-  if (status === "Failed")    return { bg: "#fee2e2", text: "#991b1b" };
-  if (status === "Refunded")  return { bg: "#e0e7ff", text: "#3730a3" };
-  return                             { bg: "#fef9c3", text: "#854d0e" };
-}
-
 // ── Stat card ─────────────────────────────────────────────────────────────────
-function StatCard({ icon, label, value, sub, color }) {
+function StatCard({ icon, label, value, color }) {
   return (
     <div className="db-stat-card">
       <div className="db-stat-icon" style={{ background: color + "20", color }}>
@@ -50,7 +63,6 @@ function StatCard({ icon, label, value, sub, color }) {
       <div>
         <p className="db-stat-value">{value}</p>
         <p className="db-stat-label">{label}</p>
-        {sub && <p className="db-stat-sub">{sub}</p>}
       </div>
     </div>
   );
@@ -104,30 +116,21 @@ function DonationRow({ d }) {
 
 // ── Main component ────────────────────────────────────────────────────────────
 export default function Dashboard() {
-  const navigate  = useNavigate();
-  const location  = useLocation();
+  const navigate = useNavigate();
   const { username } = useAuth({ redirectIfUnauthenticated: true });
 
-  const [currentUID,  setCurrentUID]  = useState(null);
-  const [disasters,   setDisasters]   = useState([]);
-  const [donations,   setDonations]   = useState([]);
+  const [currentUID,   setCurrentUID]   = useState(null);
+  const [disasters,    setDisasters]    = useState([]);
+  const [donations,    setDonations]    = useState([]);
   const [allDisasters, setAllDisasters] = useState([]);
-  const [loading,     setLoading]     = useState(true);
-  const [activeTab,   setActiveTab]   = useState("requests"); // "requests" | "donations"
+  const [loading,      setLoading]      = useState(true);
+  const [activeTab,    setActiveTab]    = useState("requests");
+  const [toast,        setToast]        = useState({ message: "", type: "" });
 
-  const logout = async () => {
-    await supabase.auth.signOut();
-    navigate("/");
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+    setTimeout(() => setToast({ message: "", type: "" }), 2000);
   };
-
-  const menuItems = [
-    { icon: "🏠", label: "Dashboard",    path: "/dashboard" },
-    { icon: "🗺️", label: "Map",          path: "/map" },
-    { icon: "📝", label: "Requests",     path: "/requests" },
-    { icon: "🎁", label: "Donations",    path: "/donations" },
-    { icon: "👥", label: "About Us",     path: "/about" },
-    { icon: "❓", label: "Help & Support", path: "/help" },
-  ];
 
   // ── Auth ──────────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -136,20 +139,27 @@ export default function Dashboard() {
     });
   }, []);
 
+  // ── Logout ────────────────────────────────────────────────────────────────
+  const logout = async () => {
+  showToast("Logged out successfully. See you soon!", "success");
+
+  setTimeout(async () => {
+    await supabase.auth.signOut();
+    navigate("/");
+  }, 2000);
+};
+
   // ── Fetch data ────────────────────────────────────────────────────────────
   const fetchData = useCallback(async () => {
     if (!currentUID) return;
     setLoading(true);
     try {
-      // My disaster reports (recent 5)
       const myDisasters = await disasterService.getByUser(currentUID);
       setDisasters(myDisasters.slice(0, 5));
 
-      // All disasters for stats
       const all = await disasterService.getAll();
       setAllDisasters(all);
 
-      // My donations (recent 5)
       const { data: myDonations } = await supabase
         .from("donations")
         .select("*")
@@ -177,34 +187,11 @@ export default function Dashboard() {
   return (
     <div className="dashboard">
 
+      {/* ── Toast ── */}
+      <Toast message={toast.message} type={toast.type} />
+
       {/* ── SIDEBAR ── */}
-      <div className="sidebar">
-        <div className="logo">
-          <div className="logo-icon">🌐</div>
-          <h2>Disaster Aid Connect</h2>
-          <span>User Management</span>
-        </div>
-
-        <ul className="menu">
-          {menuItems.map((item) => (
-            <li
-              key={item.path}
-              className={location.pathname === item.path ? "active" : ""}
-              onClick={() => navigate(item.path)}
-            >
-              <span>{item.icon}</span>
-              <span>{item.label}</span>
-            </li>
-          ))}
-        </ul>
-
-        <div className="sidebar-footer">
-          <button className="logout" onClick={logout}>
-            <span>🚪</span>
-            <span>Logout</span>
-          </button>
-        </div>
-      </div>
+      <Sidebar onLogout={logout} />
 
       {/* ── MAIN ── */}
       <div className="main">
@@ -225,9 +212,9 @@ export default function Dashboard() {
 
         {/* ── Stat cards ── */}
         <div className="db-stats-grid">
-          <StatCard icon="📋" label="My reports"       value={totalReports}             color="#3b82f6" />
-          <StatCard icon="🔴" label="Active disasters" value={activeCount}              color="#ef4444" />
-          <StatCard icon="⚠️" label="Critical alerts"  value={criticalCount}            color="#f97316" />
+          <StatCard icon="📋" label="My reports"       value={totalReports}               color="#3b82f6" />
+          <StatCard icon="🔴" label="Active disasters" value={activeCount}                color="#ef4444" />
+          <StatCard icon="⚠️" label="Critical alerts"  value={criticalCount}              color="#f97316" />
           <StatCard icon="💙" label="Total donated"    value={formatAmount(totalDonated)} color="#8b5cf6" />
         </div>
 
@@ -257,7 +244,10 @@ export default function Dashboard() {
               <button className="request-btn" onClick={() => navigate("/map")}>
                 + Add on Map
               </button>
-              <button className="history-btn" onClick={() => navigate(activeTab === "requests" ? "/requests" : "/donations")}>
+              <button
+                className="history-btn"
+                onClick={() => navigate(activeTab === "requests" ? "/requests" : "/donations")}
+              >
                 View All
               </button>
             </div>
@@ -282,11 +272,7 @@ export default function Dashboard() {
             ) : (
               <div className="db-list">
                 {disasters.map((d) => (
-                  <DisasterRow
-                    key={d.id}
-                    d={d}
-                    onClick={() => navigate("/requests")}
-                  />
+                  <DisasterRow key={d.id} d={d} onClick={() => navigate("/requests")} />
                 ))}
                 <button className="db-view-all-btn" onClick={() => navigate("/requests")}>
                   View all requests →
@@ -315,7 +301,6 @@ export default function Dashboard() {
             )
           )}
         </div>
-
       </div>
     </div>
   );
