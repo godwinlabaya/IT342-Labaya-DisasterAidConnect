@@ -3,9 +3,26 @@ import { supabase } from "../../supabaseClient";
 import "./Login.css";
 import { useNavigate, Link } from "react-router-dom";
 
+// ── Toast component ───────────────────────────────────────────────────────────
+function Toast({ message, type }) {
+  if (!message) return null;
+  return (
+    <div className={`toast toast-${type}`}>
+      <span className="toast-icon">{type === "success" ? "✅" : "❌"}</span>
+      <span>{message}</span>
+    </div>
+  );
+}
+
 export default function Login() {
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form,    setForm]    = useState({ email: "", password: "" });
+  const [toast,   setToast]   = useState({ message: "", type: "" });
   const navigate = useNavigate();
+
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+    setTimeout(() => setToast({ message: "", type: "" }), 3000);
+  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -13,16 +30,16 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const { error } = await supabase.auth.signInWithPassword({
       email: form.email,
       password: form.password,
     });
 
     if (error) {
-      alert(error.message);
+      showToast(error.message, "error");
     } else {
-      navigate("/dashboard");
+      showToast("Successfully logged in! Redirecting…", "success");
+      setTimeout(() => navigate("/dashboard"), 1500);
     }
   };
 
@@ -32,15 +49,15 @@ export default function Login() {
 
   return (
     <div className="login-container">
-      
+
+      {/* ── Toast ── */}
+      <Toast message={toast.message} type={toast.type} />
+
       {/* LEFT SIDE */}
       <div className="login-left">
-
         <div className="brand">
           <div className="logo-box"></div>
-          <h1>
-            <span className="blue">DISASTER</span>AIDCONNECT
-          </h1>
+          <h1><span className="blue">DISASTER</span>AIDCONNECT</h1>
         </div>
 
         <h2>Transform Crisis Into Coordinated Action</h2>
@@ -51,10 +68,7 @@ export default function Login() {
           efficiently, and support those affected when it matters most.
         </p>
 
-        <p>hello</p>
-
         <div className="features">
-
           <div className="feature">
             <div className="icon-box"></div>
             <div>
@@ -62,7 +76,6 @@ export default function Login() {
               <p>Manage requests, track aid distribution, and monitor response progress in one unified platform.</p>
             </div>
           </div>
-
           <div className="feature">
             <div className="icon-box"></div>
             <div>
@@ -70,7 +83,6 @@ export default function Login() {
               <p>Bring together certified responders, NGOs, and local volunteers to work seamlessly during emergencies.</p>
             </div>
           </div>
-
           <div className="feature">
             <div className="icon-box"></div>
             <div>
@@ -78,13 +90,11 @@ export default function Login() {
               <p>Match supplies, shelter, and medical assistance with communities in urgent need.</p>
             </div>
           </div>
-
         </div>
       </div>
 
       {/* RIGHT SIDE */}
       <div className="login-right">
-
         <div className="login-card">
           <h2>Welcome back</h2>
           <p className="subtitle">Sign in to your account to continue</p>
@@ -100,7 +110,6 @@ export default function Login() {
                 required
               />
             </div>
-
             <div>
               <label>Password</label>
               <input
@@ -117,26 +126,21 @@ export default function Login() {
                 <input type="checkbox" />
                 Remember Me
               </label>
-
               <a href="#">Forgot Password?</a>
             </div>
 
             <button type="submit">SIGN IN</button>
-            <button onClick={handleGoogleLogin}>
+            <button type="button" onClick={handleGoogleLogin}>
               Sign in with Google
             </button>
           </form>
 
-          <div className="divider">
-            <span>OR</span>
-          </div>
+          <div className="divider"><span>OR</span></div>
 
           <p className="register-text">
             Don't have an account? <Link to="/register">Sign up</Link>
           </p>
-
         </div>
-
       </div>
     </div>
   );

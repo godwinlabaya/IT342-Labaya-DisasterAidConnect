@@ -1,5 +1,5 @@
 import Sidebar from "../../components/Sidebar";
-import "../Dashboard/Dashboard.css";
+import "../../../features/dashboard/Dashboard.css";
 import "./Help.css";
 
 const QUICK_LINKS = [

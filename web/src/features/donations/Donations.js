@@ -1,5 +1,5 @@
-import Sidebar from "../../components/Sidebar";
-import "../Dashboard/Dashboard.css";
+import Sidebar from "../../shared/components/Sidebar";
+import "../dashboard/Dashboard.css";
 
 export default function DonationsPage() {
   return (
