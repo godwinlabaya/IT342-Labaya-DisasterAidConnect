@@ -3,7 +3,6 @@ import { supabase } from "../../supabaseClient";
 import "./Login.css";
 import { useNavigate, Link } from "react-router-dom";
 
-// ── Toast component ───────────────────────────────────────────────────────────
 function Toast({ message, type }) {
   if (!message) return null;
   return (
@@ -15,8 +14,8 @@ function Toast({ message, type }) {
 }
 
 export default function Login() {
-  const [form,    setForm]    = useState({ email: "", password: "" });
-  const [toast,   setToast]   = useState({ message: "", type: "" });
+  const [form,  setForm]  = useState({ email: "", password: "" });
+  const [toast, setToast] = useState({ message: "", type: "" });
   const navigate = useNavigate();
 
   const showToast = (message, type = "success") => {
@@ -30,13 +29,29 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { error } = await supabase.auth.signInWithPassword({
+
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: form.email,
       password: form.password,
     });
 
     if (error) {
       showToast(error.message, "error");
+      return;
+    }
+
+    // ── Check role in users table ──────────────────────────────────────────
+    const { data: userData } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", data.user.id)
+      .single();
+
+    const role = userData?.role ?? "user";
+
+    if (role === "admin") {
+      showToast("Welcome back, Admin! Redirecting…", "success");
+      setTimeout(() => navigate("/admin/dashboard"), 1500);
     } else {
       showToast("Successfully logged in! Redirecting…", "success");
       setTimeout(() => navigate("/dashboard"), 1500);
@@ -49,8 +64,6 @@ export default function Login() {
 
   return (
     <div className="login-container">
-
-      {/* ── Toast ── */}
       <Toast message={toast.message} type={toast.type} />
 
       {/* LEFT SIDE */}
@@ -59,15 +72,12 @@ export default function Login() {
           <div className="logo-box"></div>
           <h1><span className="blue">DISASTER</span>AIDCONNECT</h1>
         </div>
-
         <h2>Transform Crisis Into Coordinated Action</h2>
-
         <p className="description">
           Connects communities, volunteers, and aid organizations in real time.
           Disaster Aid Connect helps streamline relief efforts, allocate resources
           efficiently, and support those affected when it matters most.
         </p>
-
         <div className="features">
           <div className="feature">
             <div className="icon-box"></div>
@@ -98,45 +108,23 @@ export default function Login() {
         <div className="login-card">
           <h2>Welcome back</h2>
           <p className="subtitle">Sign in to your account to continue</p>
-
           <form onSubmit={handleSubmit}>
             <div>
               <label>Email Address</label>
-              <input
-                name="email"
-                type="email"
-                placeholder="you@email.com"
-                onChange={handleChange}
-                required
-              />
+              <input name="email" type="email" placeholder="you@email.com" onChange={handleChange} required />
             </div>
             <div>
               <label>Password</label>
-              <input
-                name="password"
-                type="password"
-                placeholder="••••••••••••"
-                onChange={handleChange}
-                required
-              />
+              <input name="password" type="password" placeholder="••••••••••••" onChange={handleChange} required />
             </div>
-
             <div className="login-options">
-              <label>
-                <input type="checkbox" />
-                Remember Me
-              </label>
+              <label><input type="checkbox" /> Remember Me</label>
               <a href="#">Forgot Password?</a>
             </div>
-
             <button type="submit">SIGN IN</button>
-            <button type="button" onClick={handleGoogleLogin}>
-              Sign in with Google
-            </button>
+            <button type="button" onClick={handleGoogleLogin}>Sign in with Google</button>
           </form>
-
           <div className="divider"><span>OR</span></div>
-
           <p className="register-text">
             Don't have an account? <Link to="/register">Sign up</Link>
           </p>
