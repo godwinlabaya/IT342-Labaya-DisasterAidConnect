@@ -3,10 +3,10 @@ import "../../../features/dashboard/Dashboard.css";
 import "./Help.css";
 
 const QUICK_LINKS = [
-  { icon: "🗺️", category: "Map",       desc: "Add disaster points" },
-  { icon: "📋", category: "Requests",  desc: "Manage aid requests" },
-  { icon: "❤️", category: "Donations", desc: "Send or track donations" },
-  { icon: "👤", category: "Account",   desc: "Profile & security" },
+  { icon: "ti-map-2",        category: "Map",       desc: "Add disaster points" },
+  { icon: "ti-clipboard-list", category: "Requests", desc: "Manage aid requests" },
+  { icon: "ti-heart",        category: "Donations",  desc: "Send or track donations" },
+  { icon: "ti-user",         category: "Account",    desc: "Profile & security" },
 ];
 
 const FAQS = [
@@ -56,7 +56,9 @@ export default function HelpPage() {
           <div className="help-quick-grid">
             {QUICK_LINKS.map((l) => (
               <div key={l.category} className="help-quick-card">
-                <span className="help-quick-icon">{l.icon}</span>
+                <div className="help-quick-icon">
+                  <i className={`ti ${l.icon}`} aria-hidden="true" />
+                </div>
                 <div>
                   <p className="help-quick-category">{l.category}</p>
                   <p className="help-quick-desc">{l.desc}</p>
@@ -92,11 +94,15 @@ export default function HelpPage() {
               </div>
               <div className="help-contact-details">
                 <div className="help-contact-detail">
-                  <span className="help-contact-detail-icon">✉️</span>
+                  <div className="help-contact-detail-icon">
+                    <i className="ti ti-mail" aria-hidden="true" />
+                  </div>
                   <span className="help-contact-email">godwin@email.com</span>
                 </div>
                 <div className="help-contact-detail">
-                  <span className="help-contact-detail-icon">🏫</span>
+                  <div className="help-contact-detail-icon">
+                    <i className="ti ti-school" aria-hidden="true" />
+                  </div>
                   <span>CIT University, Cebu — IT342</span>
                 </div>
               </div>
@@ -105,7 +111,9 @@ export default function HelpPage() {
 
           {/* ── Notice ── */}
           <div className="help-notice">
-            <span className="help-notice-icon">ℹ️</span>
+            <div className="help-notice-icon">
+              <i className="ti ti-info-circle" aria-hidden="true" />
+            </div>
             <p className="help-notice-text">
               Disaster Aid Connect is a capstone project built for IT342. For urgent issues,
               contact the developer directly via email.
