@@ -6,26 +6,22 @@ import "../Admin.css";
 
 function formatDate(iso) {
   if (!iso) return "—";
-  return new Date(iso).toLocaleDateString("en-US", {
-    month: "short", day: "numeric", year: "numeric",
-  });
+  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
 function formatAmount(amount) {
-  return new Intl.NumberFormat("en-PH", {
-    style: "currency", currency: "PHP", minimumFractionDigits: 0,
-  }).format(amount);
+  return new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP", minimumFractionDigits: 0 }).format(amount);
 }
 
 function getStatusStyle(status) {
-  if (status === "Completed") return { bg: "#dcfce7", color: "#166534" };
-  if (status === "Failed")    return { bg: "#fee2e2", color: "#991b1b" };
-  if (status === "Refunded")  return { bg: "#e0e7ff", color: "#3730a3" };
-  return                             { bg: "#fef9c3", color: "#854d0e" };
+  if (status === "Completed") return { bg: "#f0fdf4", color: "#166534" };
+  if (status === "Failed")    return { bg: "#fef2f2", color: "#991b1b" };
+  if (status === "Refunded")  return { bg: "#eff6ff", color: "#1d4ed8" };
+  return                             { bg: "#fffbeb", color: "#92400e" };
 }
 
 export default function AdminDonations() {
-  const { loading } = useAdminAuth();
+  const { loading, authed } = useAdminAuth();
 
   const [donations, setDonations] = useState([]);
   const [search,    setSearch]    = useState("");
@@ -33,10 +29,7 @@ export default function AdminDonations() {
 
   const fetchDonations = useCallback(async () => {
     setFetching(true);
-    const { data, error } = await supabase
-      .from("donations")
-      .select("*")
-      .order("donated_at", { ascending: false });
+    const { data, error } = await supabase.from("donations").select("*").order("donated_at", { ascending: false });
     if (!error) setDonations(data ?? []);
     setFetching(false);
   }, []);
@@ -52,11 +45,7 @@ export default function AdminDonations() {
     d.id?.toLowerCase().includes(search.toLowerCase())
   );
 
-  if (loading) return (
-    <div className="admin-layout">
-      <div className="admin-loading"><div className="admin-spinner" /></div>
-    </div>
-  );
+  if (!authed) return null;
 
   return (
     <div className="admin-layout">
@@ -64,28 +53,34 @@ export default function AdminDonations() {
 
       <div className="admin-main">
         <div className="admin-page-header">
-          <h1 className="admin-page-title">💸 Donations</h1>
+          <h1 className="admin-page-title">Donations</h1>
           <p className="admin-page-sub">View all donation records across the platform</p>
         </div>
 
         {/* Summary cards */}
-        <div className="admin-stats-grid" style={{ marginBottom: 24 }}>
+        <div className="admin-stats-grid">
           <div className="admin-stat-card">
-            <div className="admin-stat-icon" style={{ background: "#8b5cf620", color: "#8b5cf6" }}>💸</div>
+            <div className="admin-stat-icon" style={{ background: "#f5f3ff", color: "#7c3aed" }}>
+              <i className="ti ti-heart" aria-hidden="true" />
+            </div>
             <div>
               <p className="admin-stat-value">{donations.length}</p>
               <p className="admin-stat-label">Total donations</p>
             </div>
           </div>
           <div className="admin-stat-card">
-            <div className="admin-stat-icon" style={{ background: "#16a34a20", color: "#16a34a" }}>✅</div>
+            <div className="admin-stat-icon" style={{ background: "#f0fdf4", color: "#16a34a" }}>
+              <i className="ti ti-circle-check" aria-hidden="true" />
+            </div>
             <div>
               <p className="admin-stat-value">{formatAmount(totalCompleted)}</p>
               <p className="admin-stat-label">Total completed</p>
             </div>
           </div>
           <div className="admin-stat-card">
-            <div className="admin-stat-icon" style={{ background: "#f9731620", color: "#f97316" }}>⏳</div>
+            <div className="admin-stat-icon" style={{ background: "#fff7ed", color: "#ea580c" }}>
+              <i className="ti ti-clock" aria-hidden="true" />
+            </div>
             <div>
               <p className="admin-stat-value">{donations.filter((d) => d.status === "Pending").length}</p>
               <p className="admin-stat-label">Pending</p>
@@ -96,9 +91,7 @@ export default function AdminDonations() {
         <div className="admin-card">
           <div className="admin-filter-bar">
             <div className="admin-search-box">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2.5">
-                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-              </svg>
+              <i className="ti ti-search" style={{ fontSize: 14, color: "#9ca3af", flexShrink: 0 }} aria-hidden="true" />
               <input
                 type="text"
                 placeholder="Search by status or ID…"
@@ -106,7 +99,7 @@ export default function AdminDonations() {
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-            <span style={{ fontSize: 13, color: "#94a3b8" }}>{filtered.length} records</span>
+            <span className="admin-record-count">{filtered.length} records</span>
           </div>
 
           {fetching ? (
@@ -128,10 +121,8 @@ export default function AdminDonations() {
                   const style = getStatusStyle(d.status);
                   return (
                     <tr key={d.id}>
-                      <td style={{ fontFamily: "monospace", fontSize: 11, color: "#94a3b8" }}>
-                        {d.id?.slice(0, 8)}…
-                      </td>
-                      <td style={{ fontWeight: 700, color: "#1e1b4b" }}>{formatAmount(d.amount)}</td>
+                      <td className="admin-td-mono">{d.id?.slice(0, 8)}…</td>
+                      <td className="admin-td-bold">{formatAmount(d.amount)}</td>
                       <td>
                         <span className="admin-badge-status" style={{ background: style.bg, color: style.color }}>
                           {d.status}

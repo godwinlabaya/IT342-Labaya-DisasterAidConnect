@@ -6,18 +6,16 @@ import "../Admin.css";
 
 function formatDate(iso) {
   if (!iso) return "—";
-  return new Date(iso).toLocaleDateString("en-US", {
-    month: "short", day: "numeric", year: "numeric",
-  });
+  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
 function getRoleStyle(role) {
   if (role === "admin") return { bg: "#ede9fe", color: "#5b21b6" };
-  return                        { bg: "#f1f5f9", color: "#475569" };
+  return                        { bg: "#f3f4f6", color: "#374151" };
 }
 
 export default function AdminUsers() {
-  const { loading } = useAdminAuth();
+  const { loading, authed } = useAdminAuth();
 
   const [users,    setUsers]    = useState([]);
   const [search,   setSearch]   = useState("");
@@ -25,10 +23,7 @@ export default function AdminUsers() {
 
   const fetchUsers = useCallback(async () => {
     setFetching(true);
-    const { data, error } = await supabase
-      .from("users")
-      .select("*")
-      .order("created_at", { ascending: false });
+    const { data, error } = await supabase.from("users").select("*").order("created_at", { ascending: false });
     if (!error) setUsers(data ?? []);
     setFetching(false);
   }, []);
@@ -40,11 +35,7 @@ export default function AdminUsers() {
     u.email?.toLowerCase().includes(search.toLowerCase())
   );
 
-  if (loading) return (
-    <div className="admin-layout">
-      <div className="admin-loading"><div className="admin-spinner" /></div>
-    </div>
-  );
+  if (!authed) return null;
 
   return (
     <div className="admin-layout">
@@ -52,16 +43,14 @@ export default function AdminUsers() {
 
       <div className="admin-main">
         <div className="admin-page-header">
-          <h1 className="admin-page-title">👥 Users</h1>
+          <h1 className="admin-page-title">Users</h1>
           <p className="admin-page-sub">View all registered users on the platform</p>
         </div>
 
         <div className="admin-card">
           <div className="admin-filter-bar">
             <div className="admin-search-box">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2.5">
-                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-              </svg>
+              <i className="ti ti-search" style={{ fontSize: 14, color: "#9ca3af", flexShrink: 0 }} aria-hidden="true" />
               <input
                 type="text"
                 placeholder="Search by username or email…"
@@ -69,7 +58,7 @@ export default function AdminUsers() {
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-            <span style={{ fontSize: 13, color: "#94a3b8" }}>{filtered.length} users</span>
+            <span className="admin-record-count">{filtered.length} users</span>
           </div>
 
           {fetching ? (
@@ -80,8 +69,7 @@ export default function AdminUsers() {
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>Avatar</th>
-                  <th>Username</th>
+                  <th>User</th>
                   <th>Email</th>
                   <th>Role</th>
                   <th>Joined</th>
@@ -93,17 +81,16 @@ export default function AdminUsers() {
                   return (
                     <tr key={u.id}>
                       <td>
-                        <div style={{
-                          width: 34, height: 34, borderRadius: "50%",
-                          background: u.role === "admin" ? "#4f46e5" : "#0a2942",
-                          color: "white", display: "flex", alignItems: "center",
-                          justifyContent: "center", fontWeight: 700, fontSize: 12,
-                        }}>
-                          {u.username?.slice(0, 2).toUpperCase() ?? "??"}
+                        <div className="admin-user-cell">
+                          <div className="admin-user-avatar" style={{
+                            background: u.role === "admin" ? "#6366f1" : "#111827",
+                          }}>
+                            {u.username?.slice(0, 2).toUpperCase() ?? "??"}
+                          </div>
+                          <span className="admin-td-bold">{u.username}</span>
                         </div>
                       </td>
-                      <td style={{ fontWeight: 600, color: "#1e1b4b" }}>{u.username}</td>
-                      <td style={{ color: "#64748b" }}>{u.email}</td>
+                      <td className="admin-td-muted">{u.email}</td>
                       <td>
                         <span className="admin-badge-status" style={{ background: roleStyle.bg, color: roleStyle.color }}>
                           {u.role ?? "user"}

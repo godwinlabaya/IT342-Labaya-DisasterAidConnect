@@ -10,7 +10,7 @@ function Toast({ message, type }) {
   if (!message) return null;
   return (
     <div className={`toast toast-${type}`}>
-      <span className="toast-icon">{type === "success" ? "✅" : "❌"}</span>
+      <i className={`ti ${type === "success" ? "ti-circle-check" : "ti-alert-circle"} toast-icon`} aria-hidden="true" />
       <span>{message}</span>
     </div>
   );
@@ -20,7 +20,9 @@ function ConfirmDialog({ title, onConfirm, onCancel }) {
   return (
     <div className="admin-backdrop">
       <div className="admin-confirm">
-        <div className="admin-confirm-icon">🗑️</div>
+        <div className="admin-confirm-icon">
+          <i className="ti ti-trash" aria-hidden="true" />
+        </div>
         <h3>Delete this disaster?</h3>
         <p>"{title}" will be permanently removed. This cannot be undone.</p>
         <div className="admin-confirm-actions">
@@ -36,44 +38,38 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
   if (totalPages <= 1) return null;
   return (
     <div className="admin-pagination">
-      <button
-        className="admin-page-btn"
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-      >← Prev</button>
+      <button className="admin-page-btn" onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}>
+        <i className="ti ti-arrow-left" aria-hidden="true" /> Prev
+      </button>
       <span className="admin-page-info">Page {currentPage} of {totalPages}</span>
-      <button
-        className="admin-page-btn"
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-      >Next →</button>
+      <button className="admin-page-btn" onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+        Next <i className="ti ti-arrow-right" aria-hidden="true" />
+      </button>
     </div>
   );
 }
 
 function getSeverityStyle(level) {
-  if (level === "Critical") return { bg: "#fee2e2", color: "#991b1b" };
-  if (level === "High")     return { bg: "#ffedd5", color: "#9a3412" };
-  if (level === "Medium")   return { bg: "#fef9c3", color: "#854d0e" };
-  return                           { bg: "#dcfce7", color: "#166534" };
+  if (level === "Critical") return { bg: "#fef2f2", color: "#991b1b" };
+  if (level === "High")     return { bg: "#fff7ed", color: "#9a3412" };
+  if (level === "Medium")   return { bg: "#fefce8", color: "#854d0e" };
+  return                           { bg: "#f0fdf4", color: "#166534" };
 }
 
 function getStatusStyle(status) {
-  if (status === "Active")     return { bg: "#dcfce7", color: "#166534" };
-  if (status === "Monitoring") return { bg: "#fef3c7", color: "#92400e" };
-  if (status === "Resolved")   return { bg: "#e0e7ff", color: "#3730a3" };
+  if (status === "Active")     return { bg: "#f0fdf4", color: "#166534" };
+  if (status === "Monitoring") return { bg: "#fffbeb", color: "#92400e" };
+  if (status === "Resolved")   return { bg: "#eff6ff", color: "#1d4ed8" };
   return                              { bg: "#f3f4f6", color: "#6b7280" };
 }
 
 function formatDate(iso) {
   if (!iso) return "—";
-  return new Date(iso).toLocaleDateString("en-US", {
-    month: "short", day: "numeric", year: "numeric",
-  });
+  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
 export default function AdminDisasters() {
-  const { loading } = useAdminAuth();
+  const { loading, authed } = useAdminAuth();
 
   const [disasters,   setDisasters]   = useState([]);
   const [usersMap,    setUsersMap]    = useState({});
@@ -99,13 +95,9 @@ export default function AdminDisasters() {
 
     if (!error && data) {
       setDisasters(data);
-      // Fetch usernames for all creators
       const uids = [...new Set(data.map((d) => d.created_by).filter(Boolean))];
       if (uids.length > 0) {
-        const { data: userData } = await supabase
-          .from("users")
-          .select("id, username")
-          .in("id", uids);
+        const { data: userData } = await supabase.from("users").select("id, username").in("id", uids);
         if (userData) {
           const map = {};
           userData.forEach((u) => { map[u.id] = u.username; });
@@ -132,31 +124,20 @@ export default function AdminDisasters() {
     setDeleting(false);
   };
 
-  // ── Filter ────────────────────────────────────────────────────────────────
   const filtered = disasters.filter((d) => {
-    const matchSearch = !search ||
-      d.title?.toLowerCase().includes(search.toLowerCase()) ||
-      d.description?.toLowerCase().includes(search.toLowerCase());
-    const matchDate = !dateFilter || d.created_at?.startsWith(dateFilter);
+    const matchSearch = !search || d.title?.toLowerCase().includes(search.toLowerCase()) || d.description?.toLowerCase().includes(search.toLowerCase());
+    const matchDate   = !dateFilter || d.created_at?.startsWith(dateFilter);
     return matchSearch && matchDate;
   });
 
-  // ── Pagination ────────────────────────────────────────────────────────────
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paginated  = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  const handlePageChange = (page) => { setCurrentPage(page); window.scrollTo({ top: 0, behavior: "smooth" }); };
 
   useEffect(() => { setCurrentPage(1); }, [search, dateFilter]);
 
-  if (loading) return (
-    <div className="admin-layout">
-      <div className="admin-loading"><div className="admin-spinner" /></div>
-    </div>
-  );
+  if (!authed) return null;
 
   return (
     <div className="admin-layout">
@@ -165,17 +146,14 @@ export default function AdminDisasters() {
 
       <div className="admin-main">
         <div className="admin-page-header">
-          <h1 className="admin-page-title">🗺️ Disasters</h1>
+          <h1 className="admin-page-title">Disasters</h1>
           <p className="admin-page-sub">View and delete all reported disasters</p>
         </div>
 
         <div className="admin-card">
-          {/* ── Filter bar ── */}
           <div className="admin-filter-bar">
             <div className="admin-search-box">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2.5">
-                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-              </svg>
+              <i className="ti ti-search" style={{ fontSize: 14, color: "#9ca3af", flexShrink: 0 }} aria-hidden="true" />
               <input
                 type="text"
                 placeholder="Search by title or description…"
@@ -188,22 +166,14 @@ export default function AdminDisasters() {
               type="date"
               value={dateFilter}
               onChange={(e) => setDateFilter(e.target.value)}
-              style={{
-                border: "1px solid #e2e8f0", borderRadius: 10,
-                padding: "8px 12px", fontSize: 13,
-                color: "#334155", background: "#f8fafc", outline: "none",
-              }}
+              className="admin-date-input"
             />
 
             {dateFilter && (
-              <button className="admin-btn admin-btn-primary" onClick={() => setDateFilter("")}>
-                Clear
-              </button>
+              <button className="admin-btn admin-btn-primary" onClick={() => setDateFilter("")}>Clear</button>
             )}
 
-            <span style={{ fontSize: 13, color: "#94a3b8", marginLeft: "auto" }}>
-              {filtered.length} records
-            </span>
+            <span className="admin-record-count">{filtered.length} records</span>
           </div>
 
           {fetching ? (
@@ -212,7 +182,7 @@ export default function AdminDisasters() {
             <div className="admin-empty"><p>No disasters found.</p></div>
           ) : (
             <>
-              <p style={{ fontSize: 12, color: "#94a3b8", margin: "0 0 12px" }}>
+              <p className="admin-showing">
                 Showing {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filtered.length)} of {filtered.length}
               </p>
 
@@ -235,19 +205,13 @@ export default function AdminDisasters() {
                     const creator = usersMap[d.created_by] ?? "Unknown";
                     return (
                       <tr key={d.id}>
-                        <td style={{ fontWeight: 600, color: "#1e1b4b" }}>{d.title}</td>
+                        <td className="admin-td-bold">{d.title}</td>
                         <td>
-                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                            <div style={{
-                              width: 28, height: 28, borderRadius: "50%",
-                              background: "#0a2942", color: "white",
-                              display: "flex", alignItems: "center",
-                              justifyContent: "center", fontSize: 11, fontWeight: 700,
-                              flexShrink: 0,
-                            }}>
+                          <div className="admin-user-cell">
+                            <div className="admin-user-avatar">
                               {creator.slice(0, 2).toUpperCase()}
                             </div>
-                            <span style={{ fontSize: 13, color: "#334155" }}>{creator}</span>
+                            <span>{creator}</span>
                           </div>
                         </td>
                         <td>
@@ -260,17 +224,11 @@ export default function AdminDisasters() {
                             {d.status}
                           </span>
                         </td>
-                        <td style={{ fontFamily: "monospace", fontSize: 12 }}>
-                          {d.latitude?.toFixed(4)}, {d.longitude?.toFixed(4)}
-                        </td>
+                        <td className="admin-td-mono">{d.latitude?.toFixed(4)}, {d.longitude?.toFixed(4)}</td>
                         <td>{formatDate(d.created_at)}</td>
                         <td>
-                          <button
-                            className="admin-btn admin-btn-danger"
-                            onClick={() => setToDelete(d)}
-                            disabled={deleting}
-                          >
-                            🗑 Delete
+                          <button className="admin-btn admin-btn-danger" onClick={() => setToDelete(d)} disabled={deleting}>
+                            <i className="ti ti-trash" aria-hidden="true" /> Delete
                           </button>
                         </td>
                       </tr>
@@ -279,22 +237,14 @@ export default function AdminDisasters() {
                 </tbody>
               </table>
 
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-              />
+              <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
             </>
           )}
         </div>
       </div>
 
       {toDelete && (
-        <ConfirmDialog
-          title={toDelete.title}
-          onConfirm={handleDelete}
-          onCancel={() => setToDelete(null)}
-        />
+        <ConfirmDialog title={toDelete.title} onConfirm={handleDelete} onCancel={() => setToDelete(null)} />
       )}
     </div>
   );

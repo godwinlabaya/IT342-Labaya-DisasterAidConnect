@@ -8,17 +8,17 @@ function Toast({ message, type }) {
   if (!message) return null;
   return (
     <div className={`toast toast-${type}`}>
-      <span className="toast-icon">{type === "success" ? "✅" : "❌"}</span>
+      <i className={`ti ${type === "success" ? "ti-circle-check" : "ti-alert-circle"} toast-icon`} aria-hidden="true" />
       <span>{message}</span>
     </div>
   );
 }
 
 function getStatusStyle(status) {
-  if (status === "Approved")  return { bg: "#dcfce7", color: "#166534" };
-  if (status === "Fulfilled") return { bg: "#e0e7ff", color: "#3730a3" };
-  if (status === "Rejected")  return { bg: "#fee2e2", color: "#991b1b" };
-  return                             { bg: "#fef9c3", color: "#854d0e" }; // Pending
+  if (status === "Approved")  return { bg: "#f0fdf4", color: "#166534" };
+  if (status === "Fulfilled") return { bg: "#eff6ff", color: "#1d4ed8" };
+  if (status === "Rejected")  return { bg: "#fef2f2", color: "#991b1b" };
+  return                             { bg: "#fffbeb", color: "#92400e" };
 }
 
 function formatDate(iso) {
@@ -29,7 +29,7 @@ function formatDate(iso) {
 const STATUS_OPTIONS = ["Pending", "Approved", "Fulfilled", "Rejected"];
 
 export default function AdminAidRequests() {
-  const { loading } = useAdminAuth();
+  const { loading, authed } = useAdminAuth();
 
   const [requests,  setRequests]  = useState([]);
   const [search,    setSearch]    = useState("");
@@ -44,10 +44,7 @@ export default function AdminAidRequests() {
 
   const fetchRequests = useCallback(async () => {
     setFetching(true);
-    const { data, error } = await supabase
-      .from("aid_requests")
-      .select("*")
-      .order("created_at", { ascending: false });
+    const { data, error } = await supabase.from("aid_requests").select("*").order("created_at", { ascending: false });
     if (!error) setRequests(data ?? []);
     setFetching(false);
   }, []);
@@ -72,7 +69,7 @@ export default function AdminAidRequests() {
     return matchTab && matchSrch;
   });
 
-  if (loading) return <div className="admin-layout"><div className="admin-loading"><div className="admin-spinner" /></div></div>;
+  if (!authed) return null;
 
   return (
     <div className="admin-layout">
@@ -81,38 +78,20 @@ export default function AdminAidRequests() {
 
       <div className="admin-main">
         <div className="admin-page-header">
-          <h1 className="admin-page-title">📋 Aid Requests</h1>
+          <h1 className="admin-page-title">Aid Requests</h1>
           <p className="admin-page-sub">Approve or reject aid requests from users</p>
         </div>
 
         {/* Tabs */}
-        <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
+        <div className="admin-tabs">
           {tabs.map((tab) => (
             <button
               key={tab}
+              className={`admin-tab ${activeTab === tab ? "admin-tab-active" : ""}`}
               onClick={() => setActiveTab(tab)}
-              style={{
-                padding: "7px 16px",
-                borderRadius: 20,
-                border: "1px solid",
-                borderColor: activeTab === tab ? "#4f46e5" : "#e2e8f0",
-                background: activeTab === tab ? "#4f46e5" : "white",
-                color: activeTab === tab ? "white" : "#64748b",
-                fontSize: 13,
-                fontWeight: 500,
-                cursor: "pointer",
-              }}
             >
               {tab}
-              <span style={{
-                marginLeft: 6,
-                background: activeTab === tab ? "rgba(255,255,255,0.25)" : "#f1f5f9",
-                color: activeTab === tab ? "white" : "#94a3b8",
-                padding: "1px 7px",
-                borderRadius: 10,
-                fontSize: 11,
-                fontWeight: 700,
-              }}>
+              <span className="admin-tab-count">
                 {tab === "All" ? requests.length : requests.filter((r) => r.status === tab).length}
               </span>
             </button>
@@ -122,9 +101,7 @@ export default function AdminAidRequests() {
         <div className="admin-card">
           <div className="admin-filter-bar">
             <div className="admin-search-box">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2.5">
-                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-              </svg>
+              <i className="ti ti-search" style={{ fontSize: 14, color: "#9ca3af", flexShrink: 0 }} aria-hidden="true" />
               <input
                 type="text"
                 placeholder="Search by aid type or description…"
@@ -132,7 +109,7 @@ export default function AdminAidRequests() {
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-            <span style={{ fontSize: 13, color: "#94a3b8" }}>{filtered.length} records</span>
+            <span className="admin-record-count">{filtered.length} records</span>
           </div>
 
           {fetching ? (
@@ -156,10 +133,8 @@ export default function AdminAidRequests() {
                   const style = getStatusStyle(r.status);
                   return (
                     <tr key={r.id}>
-                      <td style={{ fontWeight: 600, color: "#1e1b4b" }}>{r.aid_type}</td>
-                      <td style={{ maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                        {r.description}
-                      </td>
+                      <td className="admin-td-bold">{r.aid_type}</td>
+                      <td className="admin-td-truncate">{r.description}</td>
                       <td>{r.quantity ?? "—"}</td>
                       <td>
                         <span className="admin-badge-status" style={{ background: style.bg, color: style.color }}>
@@ -168,18 +143,24 @@ export default function AdminAidRequests() {
                       </td>
                       <td>{formatDate(r.created_at)}</td>
                       <td>
-                        <div style={{ display: "flex", gap: 6 }}>
+                        <div className="admin-action-btns">
                           {r.status === "Pending" && (
                             <>
-                              <button className="admin-btn admin-btn-success" onClick={() => updateStatus(r.id, "Approved")}>✅ Approve</button>
-                              <button className="admin-btn admin-btn-danger"  onClick={() => updateStatus(r.id, "Rejected")}>❌ Reject</button>
+                              <button className="admin-btn admin-btn-success" onClick={() => updateStatus(r.id, "Approved")}>
+                                <i className="ti ti-check" aria-hidden="true" /> Approve
+                              </button>
+                              <button className="admin-btn admin-btn-danger" onClick={() => updateStatus(r.id, "Rejected")}>
+                                <i className="ti ti-x" aria-hidden="true" /> Reject
+                              </button>
                             </>
                           )}
                           {r.status === "Approved" && (
-                            <button className="admin-btn admin-btn-primary" onClick={() => updateStatus(r.id, "Fulfilled")}>✔ Fulfill</button>
+                            <button className="admin-btn admin-btn-primary" onClick={() => updateStatus(r.id, "Fulfilled")}>
+                              <i className="ti ti-circle-check" aria-hidden="true" /> Fulfill
+                            </button>
                           )}
                           {(r.status === "Fulfilled" || r.status === "Rejected") && (
-                            <span style={{ fontSize: 12, color: "#94a3b8" }}>No actions</span>
+                            <span className="admin-no-action">No actions</span>
                           )}
                         </div>
                       </td>
