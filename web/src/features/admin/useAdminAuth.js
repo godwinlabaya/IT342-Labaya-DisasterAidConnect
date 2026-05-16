@@ -5,6 +5,7 @@ import { supabase } from "../../supabaseClient";
 export function useAdminAuth() {
   const [username, setUsername] = useState("");
   const [loading,  setLoading]  = useState(true);
+  const [authed,   setAuthed]   = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -14,7 +15,6 @@ export function useAdminAuth() {
         return;
       }
 
-      // ── Check role — redirect non-admins away ──────────────────────────
       const { data: userData } = await supabase
         .from("users")
         .select("role, username")
@@ -27,9 +27,10 @@ export function useAdminAuth() {
       }
 
       setUsername(userData.username ?? "Admin");
+      setAuthed(true);
       setLoading(false);
     });
   }, [navigate]);
 
-  return { username, loading };
+  return { username, loading, authed };
 }
