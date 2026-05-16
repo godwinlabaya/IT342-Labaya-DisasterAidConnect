@@ -2,9 +2,8 @@ import Sidebar from "../../components/Sidebar";
 import "../../../features/dashboard/Dashboard.css";
 import "./About.css";
 
-// ── Replace the src below with your actual photo import ──────────────────────
 // import myPhoto from "../../assets/godwin.jpg";
-const myPhoto = null; // set to your imported photo once you add it
+const myPhoto = null;
 
 const ROLES = [
   "Full-stack developer",
@@ -25,28 +24,24 @@ const STACK = [
 
 const FEATURES = [
   {
-    icon: "🗺️",
+    icon: "ti-map-2",
     title: "Disaster mapping",
-    description:
-      "Report and track disaster events on an interactive live map with severity indicators.",
+    description: "Report and track disaster events on an interactive live map with severity indicators.",
   },
   {
-    icon: "📋",
+    icon: "ti-clipboard-list",
     title: "Aid requests",
-    description:
-      "Submit and manage requests for food, water, medical assistance, and shelter.",
+    description: "Submit and manage requests for food, water, medical assistance, and shelter.",
   },
   {
-    icon: "❤️",
+    icon: "ti-heart",
     title: "Donations",
-    description:
-      "Send financial aid directly to affected communities through a secure payment system.",
+    description: "Send financial aid directly to affected communities through a secure payment system.",
   },
   {
-    icon: "👥",
+    icon: "ti-users",
     title: "Community network",
-    description:
-      "Connect volunteers, NGOs, and local responders under one unified platform.",
+    description: "Connect volunteers, NGOs, and local responders under one unified platform.",
   },
 ];
 
@@ -64,7 +59,6 @@ export default function AboutPage() {
 
       <div className="main">
 
-        {/* ── Header ── */}
         <div className="header">
           <div className="header-left">
             <h1>About Us</h1>
@@ -74,14 +68,17 @@ export default function AboutPage() {
 
         <div className="about-body">
 
-          {/* ── Hero blurb ── */}
+          {/* ── Hero ── */}
           <div className="about-hero">
-            <div className="about-hero-icon">🌐</div>
+            <div className="about-hero-icon">
+              <i className="ti ti-map-2" aria-hidden="true" />
+            </div>
             <div>
               <p className="about-platform-label">About the platform</p>
               <h2 className="about-platform-title">Disaster Aid Connect</h2>
             </div>
           </div>
+
           <p className="about-tagline">
             A real-time coordination platform that bridges communities, volunteers, and aid
             organizations during disasters — making relief efforts faster, smarter, and more
@@ -108,7 +105,9 @@ export default function AboutPage() {
           <div className="about-features">
             {FEATURES.map((f) => (
               <div key={f.title} className="about-feature-card">
-                <span className="about-feature-icon">{f.icon}</span>
+                <div className="about-feature-icon">
+                  <i className={`ti ${f.icon}`} aria-hidden="true" />
+                </div>
                 <p className="about-feature-title">{f.title}</p>
                 <p className="about-feature-desc">{f.description}</p>
               </div>
@@ -120,8 +119,6 @@ export default function AboutPage() {
             <p className="about-card-label">The developer</p>
 
             <div className="about-dev-inner">
-
-              {/* Photo */}
               <div className="about-dev-photo-col">
                 <div className="about-dev-avatar">
                   {myPhoto
@@ -133,9 +130,7 @@ export default function AboutPage() {
                 <p className="about-dev-sub">Solo developer</p>
               </div>
 
-              {/* Info */}
               <div className="about-dev-info">
-
                 <p className="about-dev-section-label">Roles &amp; responsibilities</p>
                 <div className="about-pills">
                   {ROLES.map((r) => (
