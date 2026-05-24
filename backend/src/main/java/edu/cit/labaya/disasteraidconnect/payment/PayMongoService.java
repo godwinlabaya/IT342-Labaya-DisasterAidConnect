@@ -26,19 +26,13 @@ public class PayMongoService {
     private final RestTemplate restTemplate = new RestTemplate();
     private static final String PAYMONGO_BASE = "https://api.paymongo.com/v1";
 
-    /**
-     * Creates a PayMongo checkout session for GCash payment.
-     * Returns the checkout URL to redirect the user to.
-     */
     public Map<String, String> createGCashCheckout(
             BigDecimal amount,
             String donationId,
             String disasterTitle
     ) {
-        // PayMongo expects amount in centavos (PHP × 100)
         long amountCentavos = amount.multiply(BigDecimal.valueOf(100)).longValue();
 
-        // Build request body
         Map<String, Object> lineItem = new HashMap<>();
         lineItem.put("currency", "PHP");
         lineItem.put("amount", amountCentavos);
@@ -57,8 +51,6 @@ public class PayMongoService {
         attributes.put("show_line_items", true);
         attributes.put("description", "Disaster Aid Connect Donation");
         attributes.put("reference_number", donationId);
-
-        // Success / cancel redirect URLs
         attributes.put("success_url",
             frontendUrl + "/donations?status=success&donation_id=" + donationId);
         attributes.put("cancel_url",
@@ -79,15 +71,21 @@ public class PayMongoService {
             Map.class
         );
 
-        Map responseData = (Map) response.getBody().get("data");
-        Map responseAttributes = (Map) responseData.get("attributes");
+        Map responseData      = (Map) response.getBody().get("data");
+        Map responseAttrs     = (Map) responseData.get("attributes");
+        Map paymentIntentData = (Map) responseAttrs.get("payment_intent");
 
-        String checkoutUrl = (String) responseAttributes.get("checkout_url");
-        String sessionId   = (String) responseData.get("id");
+        String checkoutUrl     = (String) responseAttrs.get("checkout_url");
+        String sessionId       = (String) responseData.get("id");
+        String paymentIntentId = paymentIntentData != null ? (String) paymentIntentData.get("id") : null;
+
+        System.out.println("CHECKOUT SESSION ID: " + sessionId);
+        System.out.println("PAYMENT INTENT ID: " + paymentIntentId);
 
         return Map.of(
-            "checkoutUrl", checkoutUrl,
-            "sessionId",   sessionId
+            "checkoutUrl",     checkoutUrl,
+            "sessionId",       sessionId,
+            "paymentIntentId", paymentIntentId != null ? paymentIntentId : ""
         );
     }
 

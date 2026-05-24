@@ -1,23 +1,29 @@
 package edu.cit.labaya.disasteraidconnect.payment;
 
-import edu.cit.labaya.disasteraidconnect.donation.Donation;
-import edu.cit.labaya.disasteraidconnect.donation.DonationRepository;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import edu.cit.labaya.disasteraidconnect.donation.Donation;
+import edu.cit.labaya.disasteraidconnect.donation.DonationRepository;
+
 @RestController
 @RequestMapping("/api/payments")
-@CrossOrigin(origins = { "http://localhost:3000" })
+@CrossOrigin(origins = { "http://localhost:3000", "https://evasion-collected-happening.ngrok-free.dev" })
 public class PaymentController {
 
-    private final PayMongoService      payMongoService;
-    private final DonationRepository   donationRepo;
-    private final PaymentRepository    paymentRepo;
+    private final PayMongoService    payMongoService;
+    private final DonationRepository donationRepo;
+    private final PaymentRepository  paymentRepo;
 
     @Value("${paymongo.webhook-secret}")
     private String webhookSecret;
@@ -32,12 +38,9 @@ public class PaymentController {
         this.paymentRepo     = paymentRepo;
     }
 
-    // ── POST /api/payments/create ─────────────────────────────────────────────
-    // Called by frontend when user clicks DONATE and enters amount
     @PostMapping("/create")
     public ResponseEntity<?> createCheckout(@RequestBody PaymentRequestDTO dto) {
         try {
-            // 1. Save donation record as Pending
             Donation donation = new Donation();
             donation.setUserId(dto.getUserId());
             donation.setDisasterId(dto.getDisasterId());
@@ -45,19 +48,16 @@ public class PaymentController {
             donation.setStatus("Pending");
             Donation saved = donationRepo.save(donation);
 
-            // 2. Get disaster title for checkout description
             String disasterTitle = saved.getDisasterId() != null
                 ? saved.getDisasterId().toString()
                 : "Disaster Relief";
 
-            // 3. Create PayMongo checkout session
             Map<String, String> result = payMongoService.createGCashCheckout(
                 dto.getAmount(),
                 saved.getId().toString(),
                 disasterTitle
             );
 
-            // 4. Save payment record
             Payment payment = new Payment();
             payment.setDonationId(saved.getId());
             payment.setPaymentMethod("GCash");
@@ -65,9 +65,9 @@ public class PaymentController {
             payment.setTotalAmount(dto.getAmount());
             payment.setProcessingFee(BigDecimal.ZERO);
             payment.setTransactionReference(result.get("sessionId"));
+            payment.setPaymentIntentId(result.get("paymentIntentId")); // ← store it
             paymentRepo.save(payment);
 
-            // 5. Return checkout URL to frontend
             return ResponseEntity.ok(Map.of(
                 "checkoutUrl", result.get("checkoutUrl"),
                 "donationId",  saved.getId().toString()
@@ -77,50 +77,51 @@ public class PaymentController {
         }
     }
 
-    // ── POST /api/payments/webhook ────────────────────────────────────────────
-    // Called by PayMongo when payment is paid or failed
     @PostMapping("/webhook")
     public ResponseEntity<Void> handleWebhook(
             @RequestBody Map<String, Object> payload,
             @RequestHeader(value = "Paymongo-Signature", required = false) String signature
     ) {
         try {
+            System.out.println("=== WEBHOOK RECEIVED ===");
+
             Map<String, Object> data       = (Map<String, Object>) payload.get("data");
             Map<String, Object> attributes = (Map<String, Object>) data.get("attributes");
             String eventType               = (String) attributes.get("type");
-
             Map<String, Object> eventData  = (Map<String, Object>) attributes.get("data");
             Map<String, Object> eventAttrs = (Map<String, Object>) eventData.get("attributes");
-            String referenceNumber         = (String) eventAttrs.get("reference_number");
 
-            if (referenceNumber == null) return ResponseEntity.ok().build();
+            System.out.println("EVENT TYPE: " + eventType);
 
-            UUID donationId = UUID.fromString(referenceNumber);
+            String paymentIntentId = (String) eventAttrs.get("payment_intent_id");
+            System.out.println("PAYMENT INTENT ID: " + paymentIntentId);
 
-            // Update donation status based on event
-            donationRepo.findById(donationId).ifPresent(donation -> {
-                if ("payment.paid".equals(eventType)) {
-                    donation.setStatus("Completed");
-                } else if ("payment.failed".equals(eventType)) {
-                    donation.setStatus("Failed");
-                }
-                donationRepo.save(donation);
+            if (paymentIntentId == null) {
+                System.out.println("No payment_intent_id — skipping");
+                return ResponseEntity.ok().build();
+            }
 
-                // Update payment record too
-                paymentRepo.findByTransactionReference(referenceNumber).ifPresent(payment -> {
-                    if ("payment.paid".equals(eventType)) {
-                        payment.setPaymentStatus("Completed");
-                    } else {
-                        payment.setPaymentStatus("Failed");
-                    }
-                    paymentRepo.save(payment);
-                });
-            });
+            // Look up payment by payment_intent_id stored in our DB
+            paymentRepo.findByPaymentIntentId(paymentIntentId).ifPresentOrElse(payment -> {
+                System.out.println("PAYMENT FOUND for intent: " + paymentIntentId);
+
+                payment.setPaymentStatus("payment.paid".equals(eventType) ? "Completed" : "Failed");
+                paymentRepo.save(payment);
+                System.out.println("PAYMENT UPDATED to: " + payment.getPaymentStatus());
+
+                donationRepo.findById(payment.getDonationId()).ifPresentOrElse(donation -> {
+                    donation.setStatus("payment.paid".equals(eventType) ? "Completed" : "Failed");
+                    donationRepo.save(donation);
+                    System.out.println("DONATION UPDATED to: " + donation.getStatus());
+                }, () -> System.out.println("NO DONATION FOUND for id: " + payment.getDonationId()));
+
+            }, () -> System.out.println("NO PAYMENT FOUND for intent: " + paymentIntentId));
 
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             System.err.println("Webhook error: " + e.getMessage());
-            return ResponseEntity.ok().build(); // Always return 200 to PayMongo
+            e.printStackTrace();
+            return ResponseEntity.ok().build();
         }
     }
 }

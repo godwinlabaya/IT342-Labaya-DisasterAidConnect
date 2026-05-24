@@ -13,4 +13,8 @@ public interface PaymentRepository extends JpaRepository<Payment, UUID> {
     List<Payment> findByDonationIdOrderByPaymentDateDesc(UUID donationId);
 
     Optional<Payment> findByTransactionReference(String transactionReference);
+
+    Optional<Payment> findByDonationId(UUID donationId);
+
+    Optional<Payment> findByPaymentIntentId(String paymentIntentId);
 }
