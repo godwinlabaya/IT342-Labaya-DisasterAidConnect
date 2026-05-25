@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Sidebar from "../../shared/components/Sidebar";
 import { supabase } from "../../supabaseClient";
-import donationService from "./donationService";
+import donationService from "./DonationService";
 import "../dashboard/Dashboard.css";
 import "./Donations.css";
 

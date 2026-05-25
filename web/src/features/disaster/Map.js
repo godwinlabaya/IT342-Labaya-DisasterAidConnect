@@ -7,7 +7,7 @@ import "./Map.css";
 import { supabase } from "../../supabaseClient";
 import { createMarkerIcon, getSeverityColor } from "./iconFactory";
 import disasterService from "./disasterService";
-import donationService from "../donations/donationService";
+import donationService from "../donations/DonationService";
 import { useAuth } from "../auth/useAuth";
 
 delete L.Icon.Default.prototype._getIconUrl;
