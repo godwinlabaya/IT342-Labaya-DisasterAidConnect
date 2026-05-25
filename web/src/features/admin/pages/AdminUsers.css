@@ -1,0 +1,290 @@
+/* AdminUsers.css
+   Place at: web/src/features/admin/pages/AdminUsers.css
+   Import in AdminUsers.js: import "./AdminUsers.css";
+*/
+
+/* ── Mute Modal ────────────────────────────────────────────────────────────── */
+.au-modal {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+  width: 460px;
+  max-width: calc(100vw - 32px);
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: au-slide-up 0.2s ease;
+}
+
+@keyframes au-slide-up {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+.au-modal-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 22px 22px 16px;
+  border-bottom: 1px solid #f3f4f6;
+  position: relative;
+}
+
+.au-modal-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: #fff7ed;
+  color: #ea580c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.au-modal-titles { flex: 1; min-width: 0; }
+
+.au-modal-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 3px;
+}
+
+.au-modal-sub {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0;
+}
+.au-modal-sub strong { color: #374151; }
+
+.au-modal-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  border: none;
+  background: #f3f4f6;
+  color: #6b7280;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+.au-modal-close:hover { background: #e5e7eb; color: #111827; }
+
+.au-modal-body {
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.au-modal-footer {
+  padding: 14px 22px;
+  border-top: 1px solid #f3f4f6;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* ── Form helpers ──────────────────────────────────────────────────────────── */
+.au-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 8px;
+}
+
+.au-required { color: #ef4444; margin-left: 2px; }
+
+.au-field { display: flex; flex-direction: column; }
+
+.au-field-hint {
+  font-size: 11.5px;
+  color: #9ca3af;
+  margin: 5px 0 0;
+}
+.au-field-hint strong { color: #374151; }
+
+/* Preset chips */
+.au-presets {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.au-preset-btn {
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1.5px solid #e5e7eb;
+  background: #fff;
+  color: #6b7280;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.12s;
+}
+.au-preset-btn:hover { border-color: #f97316; color: #f97316; }
+.au-preset-btn--active {
+  background: #fff7ed;
+  border-color: #f97316;
+  color: #ea580c;
+}
+
+/* Number input */
+.au-input-wrap {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 9px;
+  overflow: hidden;
+  background: #fff;
+  transition: border-color 0.15s;
+}
+.au-input-wrap:focus-within { border-color: #f97316; }
+
+.au-input-icon {
+  padding: 0 10px;
+  font-size: 15px;
+  color: #9ca3af;
+}
+
+.au-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 9px 6px 9px 0;
+  font-size: 14px;
+  color: #111827;
+  font-family: inherit;
+  background: transparent;
+}
+
+.au-input-suffix {
+  padding: 0 12px;
+  font-size: 12px;
+  color: #9ca3af;
+  font-weight: 500;
+  border-left: 1px solid #f3f4f6;
+  background: #f9fafb;
+  height: 38px;
+  display: flex;
+  align-items: center;
+}
+
+/* Textarea */
+.au-textarea {
+  border: 1.5px solid #e5e7eb;
+  border-radius: 9px;
+  padding: 10px 12px;
+  font-size: 13.5px;
+  color: #111827;
+  font-family: inherit;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.au-textarea:focus { border-color: #f97316; }
+.au-textarea::placeholder { color: #d1d5db; }
+
+/* Error */
+.au-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* ── Shared button overrides ───────────────────────────────────────────────── */
+/* Reuses .admin-btn from Admin.css; these just add new colour variants */
+.au-btn-ghost {
+  background: #f3f4f6 !important;
+  color: #374151 !important;
+}
+.au-btn-ghost:hover { background: #e5e7eb !important; }
+
+.au-btn-warn {
+  background: #ea580c !important;
+  color: #fff !important;
+}
+.au-btn-warn:hover { background: #c2410c !important; }
+
+/* ── Confirm dialog icon variant ───────────────────────────────────────────── */
+.admin-confirm-icon--danger {
+  background: #fef2f2 !important;
+  color: #dc2626 !important;
+}
+
+/* ── Table: action button size ─────────────────────────────────────────────── */
+.au-action-btn {
+  font-size: 12px !important;
+  padding: 5px 11px !important;
+  white-space: nowrap;
+}
+
+/* ── Status badges ─────────────────────────────────────────────────────────── */
+.au-mute-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #fff7ed;
+  color: #ea580c;
+  border: 1px solid #fed7aa;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.au-active-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.au-mute-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.au-mute-expiry {
+  font-size: 11px;
+  color: #9ca3af;
+  padding-left: 2px;
+}
+
+.au-mute-reason {
+  font-size: 11px;
+  color: #6b7280;
+  font-style: italic;
+  padding-left: 2px;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Muted row tint */
+.au-row-muted td { background: #fffbf7 !important; }
