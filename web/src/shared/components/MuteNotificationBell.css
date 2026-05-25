@@ -1,0 +1,176 @@
+/* MuteNotificationBell.css */
+
+.mnb-wrap {
+  position: relative;
+}
+
+/* The dot is already styled via .notif-dot in Dashboard.css,
+   but we override color to orange for a mute-specific look */
+.mnb-dot {
+  background: #f97316 !important;
+}
+
+/* ── Backdrop ──────────────────────────────────────────────────────────────── */
+.mnb-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+}
+
+/* ── Panel ─────────────────────────────────────────────────────────────────── */
+.mnb-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 320px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12);
+  z-index: 201;
+  overflow: hidden;
+  animation: mnb-drop 0.18s ease;
+}
+
+@keyframes mnb-drop {
+  from { opacity: 0; transform: translateY(-8px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+/* ── Panel header ──────────────────────────────────────────────────────────── */
+.mnb-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.mnb-panel-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.mnb-close {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: none;
+  background: #f3f4f6;
+  color: #6b7280;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s, color 0.12s;
+}
+.mnb-close:hover { background: #e5e7eb; color: #111827; }
+
+/* ── Notification item ─────────────────────────────────────────────────────── */
+.mnb-item {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+}
+
+.mnb-item--mute {
+  background: #fffbf7;
+  border-left: 3px solid #f97316;
+}
+
+.mnb-item-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: #fff7ed;
+  color: #ea580c;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.mnb-item-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.mnb-item-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.mnb-item-reason {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  font-size: 12.5px;
+  color: #374151;
+  margin: 0;
+  line-height: 1.5;
+  font-style: italic;
+}
+.mnb-item-reason i { font-size: 12px; flex-shrink: 0; margin-top: 2px; color: #9ca3af; }
+
+.mnb-item-meta {
+  font-size: 11.5px;
+  color: #6b7280;
+  margin: 0;
+}
+.mnb-item-meta strong { color: #374151; font-weight: 600; }
+
+.mnb-item-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  background: #fef2f2;
+  color: #b91c1c;
+  border-radius: 7px;
+  padding: 7px 9px;
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1.5;
+  margin-top: 2px;
+}
+.mnb-item-notice i { font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+
+/* ── Empty state ───────────────────────────────────────────────────────────── */
+.mnb-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 28px 16px;
+  color: #9ca3af;
+}
+.mnb-empty i    { font-size: 24px; }
+.mnb-empty p    { font-size: 13px; margin: 0; }
+
+/* Self-contained bell button — works on any page */
+.mnb-bell {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  color: #6b7280;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background .15s;
+  flex-shrink: 0;
+  position: relative;
+}
+.mnb-bell:hover { background: #f9fafb; }
