@@ -14,7 +14,7 @@ import HelpPage       from "./shared/pages/Help/Help";
 // ── Admin features ─────────────────────────────────────────────────────────────
 import AdminDashboard  from "./features/admin/pages/AdminDashboard";
 import AdminDisasters  from "./features/admin/pages/AdminDisasters";
-import AdminAidRequests from "./features/admin/pages/AdminAidRequests";
+import AdminMap from "./features/admin/pages/AdminMap";
 import AdminDonations  from "./features/admin/pages/AdminDonations";
 import AdminUsers      from "./features/admin/pages/AdminUsers";
 
@@ -49,7 +49,7 @@ function App() {
         ── */}
         <Route path="/admin/dashboard"    element={<AdminDashboard />} />
         <Route path="/admin/disasters"    element={<AdminDisasters />} />
-        <Route path="/admin/aid-requests" element={<AdminAidRequests />} />
+        <Route path="/admin/map" element={<AdminMap />} />
         <Route path="/admin/donations"    element={<AdminDonations />} />
         <Route path="/admin/users"        element={<AdminUsers />} />
 

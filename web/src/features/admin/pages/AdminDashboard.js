@@ -30,18 +30,19 @@ function StatCard({ icon, label, value, iconBg, iconColor }) {
   );
 }
 
+// ── "Aid Requests" replaced with "Map" ──────────────────────────────────────
 const QUICK_ITEMS = [
-  { icon: "ti-map-2",          label: "Manage Disasters", sub: "View and delete disaster reports",  path: "/admin/disasters",    iconBg: "#fef2f2", iconColor: "#dc2626" },
-  { icon: "ti-clipboard-list", label: "Aid Requests",     sub: "Approve or reject aid requests",    path: "/admin/aid-requests", iconBg: "#fff7ed", iconColor: "#ea580c" },
-  { icon: "ti-heart",          label: "Donations",         sub: "View all donation records",         path: "/admin/donations",    iconBg: "#f5f3ff", iconColor: "#7c3aed" },
-  { icon: "ti-users",          label: "Users",             sub: "View all registered users",         path: "/admin/users",        iconBg: "#eff6ff", iconColor: "#2563eb" },
+  { icon: "ti-map-2",    label: "Manage Disasters", sub: "View and delete disaster reports",  path: "/admin/disasters", iconBg: "#fef2f2", iconColor: "#dc2626" },
+  { icon: "ti-map-pin",  label: "Disaster Map",     sub: "View and manage map points",        path: "/admin/map",       iconBg: "#eff6ff", iconColor: "#2563eb" },
+  { icon: "ti-heart",    label: "Donations",         sub: "View all donation records",         path: "/admin/donations", iconBg: "#f5f3ff", iconColor: "#7c3aed" },
+  { icon: "ti-users",    label: "Users",             sub: "View all registered users",         path: "/admin/users",     iconBg: "#f0fdf4", iconColor: "#16a34a" },
 ];
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const { username, loading, authed } = useAdminAuth();
 
-  const [stats, setStats] = useState({ disasters: 0, aidRequests: 0, donations: 0, users: 0 });
+  const [stats, setStats] = useState({ disasters: 0, mapPoints: 0, donations: 0, users: 0 });
   const [toast, setToast] = useState({ message: "", type: "" });
 
   const showToast = (message, type = "success") => {
@@ -58,16 +59,16 @@ export default function AdminDashboard() {
   const fetchStats = useCallback(async () => {
     const [
       { count: disasters },
-      { count: aidRequests },
+      { count: mapPoints },
       { count: donations },
       { count: users },
     ] = await Promise.all([
-      supabase.from("disasters").select("*",    { count: "exact", head: true }),
-      supabase.from("aid_requests").select("*", { count: "exact", head: true }),
-      supabase.from("donations").select("*",    { count: "exact", head: true }),
-      supabase.from("users").select("*",        { count: "exact", head: true }),
+      supabase.from("disasters").select("*",  { count: "exact", head: true }),
+      supabase.from("disasters").select("*",  { count: "exact", head: true }),
+      supabase.from("donations").select("*",  { count: "exact", head: true }),
+      supabase.from("users").select("*",      { count: "exact", head: true }),
     ]);
-    setStats({ disasters, aidRequests, donations, users });
+    setStats({ disasters, mapPoints, donations, users });
   }, []);
 
   useEffect(() => { if (!loading) fetchStats(); }, [loading, fetchStats]);
@@ -91,12 +92,12 @@ export default function AdminDashboard() {
           <div className="admin-avatar">{username?.slice(0, 2).toUpperCase()}</div>
         </div>
 
-        {/* Stats */}
+        {/* Stats — "Aid Requests" replaced with "Map Points" */}
         <div className="admin-stats-grid">
-          <StatCard icon="ti-map-2"          label="Total Disasters"  value={stats.disasters}   iconBg="#fef2f2" iconColor="#dc2626" />
-          <StatCard icon="ti-clipboard-list" label="Aid Requests"     value={stats.aidRequests} iconBg="#fff7ed" iconColor="#ea580c" />
-          <StatCard icon="ti-heart"          label="Total Donations"  value={stats.donations}   iconBg="#f5f3ff" iconColor="#7c3aed" />
-          <StatCard icon="ti-users"          label="Registered Users" value={stats.users}       iconBg="#eff6ff" iconColor="#2563eb" />
+          <StatCard icon="ti-map-2"      label="Total Disasters"  value={stats.disasters}  iconBg="#fef2f2" iconColor="#dc2626" />
+          <StatCard icon="ti-map-pin"    label="Map Points"       value={stats.mapPoints}  iconBg="#eff6ff" iconColor="#2563eb" />
+          <StatCard icon="ti-heart"      label="Total Donations"  value={stats.donations}  iconBg="#f5f3ff" iconColor="#7c3aed" />
+          <StatCard icon="ti-users"      label="Registered Users" value={stats.users}      iconBg="#f0fdf4" iconColor="#16a34a" />
         </div>
 
         {/* Quick nav */}

@@ -3,13 +3,37 @@ import "./Register.css";
 import { supabase } from "../../supabaseClient";
 import { Link, useNavigate } from "react-router-dom";
 
-// ── Toast component ───────────────────────────────────────────────────────────
 function Toast({ message, type }) {
   if (!message) return null;
   return (
     <div className={`toast toast-${type}`}>
-      <span className="toast-icon">{type === "success" ? "✅" : "❌"}</span>
+      <i className={`ti ${type === "success" ? "ti-circle-check" : "ti-alert-circle"} toast-icon`} aria-hidden="true" />
       <span>{message}</span>
+    </div>
+  );
+}
+
+// ── Password input with eye toggle ────────────────────────────────────────────
+function PasswordInput({ name, placeholder, onChange, minLength }) {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="password-wrap">
+      <input
+        name={name}
+        type={show ? "text" : "password"}
+        placeholder={placeholder}
+        onChange={onChange}
+        required
+        minLength={minLength}
+      />
+      <button
+        type="button"
+        className="password-eye"
+        onClick={() => setShow((v) => !v)}
+        aria-label={show ? "Hide password" : "Show password"}
+      >
+        <i className={`ti ${show ? "ti-eye-off" : "ti-eye"}`} aria-hidden="true" />
+      </button>
     </div>
   );
 }
@@ -31,16 +55,13 @@ export default function Register() {
     setTimeout(() => setToast({ message: "", type: "" }), 3000);
   };
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (form.password !== form.confirmPassword) {
-      showToast("Passwords do not match.", "error");
-      return;
+      showToast("Passwords do not match.", "error"); return;
     }
 
     const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
@@ -49,33 +70,29 @@ export default function Register() {
       return;
     }
 
+    if (!form.securityQuestion) {
+      showToast("Please select a security question.", "error"); return;
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
       options: { data: { username: form.username } },
     });
 
-    if (error) {
-      showToast(error.message, "error");
-      return;
-    }
+    if (error) { showToast(error.message, "error"); return; }
 
     if (data.user) {
-      const { error: insertError } = await supabase.from("users").insert([
-        {
-          id: data.user.id,
-          username: form.username,
-          email: form.email,
-          security_question: form.securityQuestion,
-          security_answer: form.securityAnswer,
-          role: "user"
-        }
-      ]);
+      const { error: insertError } = await supabase.from("users").insert([{
+        id: data.user.id,
+        username: form.username,
+        email: form.email,
+        security_question: form.securityQuestion,
+        security_answer: form.securityAnswer,
+        role: "user"
+      }]);
 
-      if (insertError) {
-        showToast(insertError.message, "error");
-        return;
-      }
+      if (insertError) { showToast(insertError.message, "error"); return; }
 
       showToast("Account created successfully! Redirecting to login…", "success");
       setTimeout(() => navigate("/"), 2000);
@@ -84,8 +101,6 @@ export default function Register() {
 
   return (
     <div className="register-container">
-
-      {/* ── Toast ── */}
       <Toast message={toast.message} type={toast.type} />
 
       {/* LEFT PANEL */}
@@ -94,15 +109,12 @@ export default function Register() {
           <div className="logo-box"></div>
           <h1><span className="blue">DISASTER</span>AIDCONNECT</h1>
         </div>
-
         <h2>Transform Crisis Into Coordinated Action</h2>
-
         <p className="description">
           Connect communities, volunteers, and aid organizations in real time.
           Disaster Aid Connect helps streamline relief efforts, allocate resources
           efficiently, and support those affected when it matters most.
         </p>
-
         <div className="features">
           <div className="feature">
             <div className="icon-box"></div>
@@ -114,7 +126,7 @@ export default function Register() {
           <div className="feature">
             <div className="icon-box"></div>
             <div>
-              <h4>Connect Volunteers & Organizations</h4>
+              <h4>Connect Volunteers &amp; Organizations</h4>
               <p>Bring together certified responders, NGOs, and local volunteers to work seamlessly during emergencies.</p>
             </div>
           </div>
@@ -145,15 +157,24 @@ export default function Register() {
             </div>
             <div>
               <label>Password</label>
-              <input name="password" type="password" placeholder="••••••••••••" onChange={handleChange} required minLength="8" />
+              <PasswordInput name="password" placeholder="••••••••••••" onChange={handleChange} minLength={8} />
             </div>
             <div>
               <label>Confirm Password</label>
-              <input name="confirmPassword" type="password" placeholder="••••••••••••" onChange={handleChange} required />
+              <PasswordInput name="confirmPassword" placeholder="••••••••••••" onChange={handleChange} />
             </div>
             <div>
               <label>Security Question (for password recovery)</label>
-              <input name="securityQuestion" placeholder="What is your mother's maiden name?" onChange={handleChange} required />
+              <select name="securityQuestion" onChange={handleChange} required>
+                <option value="">— Select a question —</option>
+                <option>What is your mother's maiden name?</option>
+                <option>What is your childhood nickname?</option>
+                <option>What is your first pet's name?</option>
+                <option>What is your favorite color?</option>
+                <option>What city were you born in?</option>
+                <option>What is the name of your elementary school?</option>
+                <option>What was the make of your first car?</option>
+              </select>
             </div>
             <div>
               <label>Answer to Security Question</label>
@@ -163,7 +184,6 @@ export default function Register() {
           </form>
 
           <div className="divider"><span>OR</span></div>
-
           <p className="login-text">
             Already have an account? <Link to="/">Log in</Link>
           </p>

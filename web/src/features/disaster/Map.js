@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -7,8 +8,9 @@ import "./Map.css";
 import { supabase } from "../../supabaseClient";
 import { createMarkerIcon, getSeverityColor } from "./iconFactory";
 import disasterService from "./disasterService";
-import donationService from "../donations/DonationService";
 import { useAuth } from "../auth/useAuth";
+import MuteNotificationBell from "../../shared/components/MuteNotificationBell";
+import { useMuteStatus } from "../auth/useMuteStatus";
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -20,8 +22,8 @@ L.Icon.Default.mergeOptions({
 const DEFAULT_CENTER  = [10.3157, 123.8854];
 const DEFAULT_ZOOM    = 13;
 const SEVERITY_LEVELS = ["Low", "Medium", "High", "Critical"];
-const STATUS_OPTIONS  = ["Active", "Monitoring", "Resolved"];
-const EMPTY_FORM      = { title: "", description: "", severity_level: "Medium", status: "Active" };
+const STATUS_OPTIONS  = ["Active", "Monitoring"];
+const EMPTY_FORM      = { title: "", description: "", severity_level: "Medium", status: "Active", gcash_number: "" };
 const MAX_IMAGES      = 3;
 
 function formatDate(iso) {
@@ -49,7 +51,6 @@ function ClickHandler({ addMode, onMapClick }) {
   return null;
 }
 
-// ── Confirm dialog ────────────────────────────────────────────────────────────
 function ConfirmDialog({ message, onConfirm, onCancel }) {
   return (
     <div className="confirm-backdrop">
@@ -64,130 +65,72 @@ function ConfirmDialog({ message, onConfirm, onCancel }) {
   );
 }
 
-// ── Donation modal ────────────────────────────────────────────────────────────
-function DonationModal({ disaster, currentUID, onClose }) {
-  const [amount,   setAmount]   = useState("");
-  const [loading,  setLoading]  = useState(false);
-  const [error,    setError]    = useState("");
-
-  const handleDonate = async () => {
-    const parsed = parseFloat(amount);
-    if (!amount || isNaN(parsed) || parsed <= 0) {
-      setError("Please enter a valid amount greater than ₱0.");
-      return;
-    }
-    if (parsed < 20) {
-      setError("Minimum donation amount is ₱20.");
-      return;
-    }
-
-    setLoading(true);
-    setError("");
-
-    try {
-      const { checkoutUrl } = await donationService.createCheckout({
-        userId:     currentUID,
-        disasterId: disaster.id,
-        amount:     parsed,
-      });
-      // Redirect to GCash checkout in same tab
-      window.location.href = checkoutUrl;
-    } catch (err) {
-      setError("Payment failed: " + err.message);
-      setLoading(false);
-    }
+function DonationModal({ disaster, onClose }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    if (!disaster.gcash_number) return;
+    navigator.clipboard.writeText(disaster.gcash_number);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
-
   return (
     <div className="confirm-backdrop" onClick={onClose}>
-      <div className="confirm-box donation-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="donation-modal-box" onClick={(e) => e.stopPropagation()}>
         <div className="donation-modal-header">
-          <div className="donation-modal-icon">💙</div>
-          <h3>Donate to this disaster</h3>
+          <div className="donation-modal-icon-wrap">
+            <i className="ti ti-heart" aria-hidden="true" />
+          </div>
+          <h3 className="donation-modal-title">Donate to this disaster</h3>
           <p className="donation-modal-sub">"{disaster.title}"</p>
+          {disaster.creator_username && (
+            <p className="donation-modal-creator">Added by <strong>{disaster.creator_username}</strong></p>
+          )}
         </div>
-
-        <div className="donation-amount-section">
-          <label className="donation-label">Enter amount (PHP)</label>
-          <div className="donation-input-wrap">
-            <span className="donation-currency">₱</span>
-            <input
-              type="number"
-              className="donation-input"
-              placeholder="e.g. 500"
-              value={amount}
-              min="20"
-              onChange={(e) => setAmount(e.target.value)}
-              autoFocus
-            />
+        {disaster.gcash_number ? (
+          <>
+            <div className="donation-gcash-section">
+              <p className="donation-gcash-label">Send your donation via GCash to:</p>
+              <div className="donation-gcash-row">
+                <span className="donation-gcash-number">{disaster.gcash_number}</span>
+                <button className={`donation-copy-btn ${copied ? "donation-copy-btn-copied" : ""}`} onClick={handleCopy}>
+                  {copied ? <><i className="ti ti-check" /> Copied!</> : <><i className="ti ti-copy" /> Copy</>}
+                </button>
+              </div>
+            </div>
+            <div className="donation-notice">
+              <i className="ti ti-device-mobile" />
+              <span>Open your <strong>GCash app</strong> on your phone and send to this number.</span>
+            </div>
+          </>
+        ) : (
+          <div className="donation-no-gcash">
+            <i className="ti ti-alert-circle" />
+            <span>No GCash number provided for this disaster.</span>
           </div>
-
-          {/* Quick amount buttons */}
-          <div className="donation-quick-btns">
-            {[100, 250, 500, 1000].map((val) => (
-              <button
-                key={val}
-                className={`donation-quick-btn ${amount === String(val) ? "donation-quick-active" : ""}`}
-                onClick={() => setAmount(String(val))}
-              >
-                ₱{val.toLocaleString()}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {error && <p className="donation-error">{error}</p>}
-
-        <div className="donation-info">
-          <span>💳</span>
-          <span>You'll be redirected to GCash to complete payment</span>
-        </div>
-
-        <div className="confirm-actions">
-          <button className="form-cancel" onClick={onClose} disabled={loading}>
-            Cancel
-          </button>
-          <button
-            className="donate-submit-btn"
-            onClick={handleDonate}
-            disabled={loading || !amount}
-          >
-            {loading ? "Redirecting…" : `Donate ${amount ? "₱" + parseFloat(amount).toLocaleString() : ""}`}
-          </button>
+        )}
+        <div className="donation-modal-footer">
+          <button className="form-cancel donation-close-btn" onClick={onClose}>Close</button>
         </div>
       </div>
     </div>
   );
 }
 
-// ── Image uploader ────────────────────────────────────────────────────────────
 function ImageUploader({ images, setImages }) {
   const inputRef = useRef(null);
-
   const handleFiles = (e) => {
     const files = Array.from(e.target.files);
     const remaining = MAX_IMAGES - images.length;
-    const toAdd = files.slice(0, remaining).map((file) => ({
-      file,
-      preview: URL.createObjectURL(file),
-    }));
+    const toAdd = files.slice(0, remaining).map((file) => ({ file, preview: URL.createObjectURL(file) }));
     setImages((prev) => [...prev, ...toAdd]);
     e.target.value = "";
   };
-
   const removeImage = (idx) => {
-    setImages((prev) => {
-      URL.revokeObjectURL(prev[idx].preview);
-      return prev.filter((_, i) => i !== idx);
-    });
+    setImages((prev) => { URL.revokeObjectURL(prev[idx].preview); return prev.filter((_, i) => i !== idx); });
   };
-
   return (
     <div className="img-uploader">
-      <label className="form-field-label">
-        Proof Images
-        <span className="img-count-badge">{images.length}/{MAX_IMAGES}</span>
-      </label>
+      <label className="form-field-label">Proof Images <span className="img-count-badge">{images.length}/{MAX_IMAGES}</span></label>
       <div className="img-preview-row">
         {images.map((img, idx) => (
           <div key={idx} className="img-thumb-wrap">
@@ -198,8 +141,7 @@ function ImageUploader({ images, setImages }) {
         {images.length < MAX_IMAGES && (
           <button type="button" className="img-add-slot" onClick={() => inputRef.current?.click()}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="3" y="3" width="18" height="18" rx="3"/>
-              <path d="M12 8v8M8 12h8"/>
+              <rect x="3" y="3" width="18" height="18" rx="3"/><path d="M12 8v8M8 12h8"/>
             </svg>
             <span>Add photo</span>
           </button>
@@ -214,11 +156,9 @@ function ImageUploader({ images, setImages }) {
 async function uploadImages(imageObjs) {
   const urls = [];
   for (const { file } of imageObjs) {
-    const ext      = file.name.split(".").pop();
+    const ext = file.name.split(".").pop();
     const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-    const { error } = await supabase.storage
-      .from("disaster-images")
-      .upload(filename, file, { cacheControl: "3600", upsert: false });
+    const { error } = await supabase.storage.from("disaster-images").upload(filename, file, { cacheControl: "3600", upsert: false });
     if (error) throw new Error("Image upload failed: " + error.message);
     const { data } = supabase.storage.from("disaster-images").getPublicUrl(filename);
     urls.push(data.publicUrl);
@@ -226,7 +166,6 @@ async function uploadImages(imageObjs) {
   return urls;
 }
 
-// ── Add / Edit form ───────────────────────────────────────────────────────────
 function DisasterForm({ title, coords, form, setForm, images, setImages, onSave, onCancel, saving, error, showImageUpload = true }) {
   return (
     <div className="add-form-overlay">
@@ -238,11 +177,13 @@ function DisasterForm({ title, coords, form, setForm, images, setImages, onSave,
         {coords && <div className="add-form-coords">📍 {coords.lat.toFixed(5)}, {coords.lng.toFixed(5)}</div>}
         <div className="form-field">
           <label>Title <span className="required">*</span></label>
-          <input type="text" placeholder="e.g. Fire Breakout" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+          <input type="text" placeholder="e.g. Fire Breakout" value={form.title}
+            onChange={(e) => setForm({ ...form, title: e.target.value })} />
         </div>
         <div className="form-field">
           <label>Description <span className="required">*</span></label>
-          <textarea placeholder="Describe the situation…" rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+          <textarea placeholder="Describe the situation…" rows={3} value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })} />
         </div>
         <div className="form-row">
           <div className="form-field">
@@ -258,6 +199,11 @@ function DisasterForm({ title, coords, form, setForm, images, setImages, onSave,
             </select>
           </div>
         </div>
+        <div className="form-field">
+          <label>GCash Number <span style={{ color: "#9ca3af", fontWeight: 400 }}>(required)</span></label>
+          <input type="text" placeholder="e.g. 09123456789" value={form.gcash_number ?? ""}
+            onChange={(e) => setForm({ ...form, gcash_number: e.target.value })} />
+        </div>
         {showImageUpload && <ImageUploader images={images} setImages={setImages} />}
         {error && <p className="form-error">{error}</p>}
         <div className="form-actions">
@@ -269,7 +215,6 @@ function DisasterForm({ title, coords, form, setForm, images, setImages, onSave,
   );
 }
 
-// ── Proof images viewer ───────────────────────────────────────────────────────
 function ProofImages({ disaster }) {
   const urls = [disaster.image_url_1, disaster.image_url_2, disaster.image_url_3].filter(Boolean);
   const [lightbox, setLightbox] = useState(null);
@@ -280,7 +225,8 @@ function ProofImages({ disaster }) {
         <p className="proof-images-label">📸 Proof Images</p>
         <div className="proof-images-row">
           {urls.map((url, i) => (
-            <img key={i} src={url} alt={`proof-${i + 1}`} className="proof-thumb" onClick={() => setLightbox(url)} title="Click to enlarge" />
+            <img key={i} src={url} alt={`proof-${i + 1}`} className="proof-thumb"
+              onClick={() => setLightbox(url)} title="Click to enlarge" />
           ))}
         </div>
       </div>
@@ -296,15 +242,16 @@ function ProofImages({ disaster }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 export default function MapPage() {
-  const [disasters,     setDisasters]     = useState([]);
-  const [selected,      setSelected]      = useState(null);
-  const [currentUID,    setCurrentUID]    = useState(null);
-  const [search,        setSearch]        = useState("");
-  const [loading,       setLoading]       = useState(true);
-  const [showDonation,  setShowDonation]  = useState(false);  // ← new
+  const location = useLocation();
   const { username } = useAuth({});
+
+  const [disasters,    setDisasters]    = useState([]);
+  const [selected,     setSelected]     = useState(null);
+  const [currentUID,   setCurrentUID]   = useState(null);
+  const [search,       setSearch]       = useState("");
+  const [loading,      setLoading]      = useState(true);
+  const [showDonation, setShowDonation] = useState(false);
 
   const [addMode,    setAddMode]    = useState(false);
   const [pendingPin, setPendingPin] = useState(null);
@@ -322,6 +269,9 @@ export default function MapPage() {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting,      setDeleting]      = useState(false);
 
+  // ── Mute status ─────────────────────────────────────────────────────────────
+  const { isMuted } = useMuteStatus(currentUID);
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setCurrentUID(session?.user?.id ?? null);
@@ -333,7 +283,8 @@ export default function MapPage() {
     try {
       const data = await disasterService.getAll();
       setDisasters(data);
-      if (data.length > 0) setSelected((prev) => prev ?? data[0]);
+      const focusId = location.state?.focusDisasterId;
+      if (!focusId && data.length > 0) setSelected((prev) => prev ?? data[0]);
     } catch (err) {
       console.error("Failed to fetch disasters:", err.message);
     } finally {
@@ -343,19 +294,32 @@ export default function MapPage() {
 
   useEffect(() => { fetchDisasters(); }, [fetchDisasters]);
 
+  useEffect(() => {
+    const focusId = location.state?.focusDisasterId;
+    if (!focusId || disasters.length === 0) return;
+    const target = disasters.find((d) => d.id === focusId);
+    if (target) { setSelected(target); window.history.replaceState({}, ""); }
+  }, [disasters, location.state]);
+
   const isOwner = selected?.created_by === currentUID;
 
+  // Guard: block add mode if muted
+  const handleToggleAddMode = () => {
+    if (isMuted) return;
+    setAddMode((v) => !v);
+    if (addMode) cancelAdd();
+  };
+
   const handleMapClick = useCallback((latlng) => {
+    if (isMuted) return; // double-guard
     setPendingPin({ lat: latlng.lat, lng: latlng.lng });
-    setAddForm(EMPTY_FORM);
-    setAddImages([]);
-    setAddError("");
-    setShowAdd(true);
-  }, []);
+    setAddForm(EMPTY_FORM); setAddImages([]); setAddError(""); setShowAdd(true);
+  }, [isMuted]);
 
   const handleAdd = async () => {
-    if (!addForm.title.trim())       { setAddError("Title is required.");       return; }
-    if (!addForm.description.trim()) { setAddError("Description is required."); return; }
+    if (!addForm.title.trim())         { setAddError("Title is required.");        return; }
+    if (!addForm.description.trim())   { setAddError("Description is required.");  return; }
+    if (!addForm.gcash_number?.trim()) { setAddError("GCash number is required."); return; }
     setAddSaving(true); setAddError("");
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -366,9 +330,8 @@ export default function MapPage() {
         severity_level: addForm.severity_level, status: addForm.status,
         latitude: pendingPin.lat, longitude: pendingPin.lng,
         created_by: session?.user?.id ?? null,
-        image_url_1: imageUrls[0] ?? null,
-        image_url_2: imageUrls[1] ?? null,
-        image_url_3: imageUrls[2] ?? null,
+        gcash_number: addForm.gcash_number?.trim() || null,
+        image_url_1: imageUrls[0] ?? null, image_url_2: imageUrls[1] ?? null, image_url_3: imageUrls[2] ?? null,
       });
       setDisasters((prev) => [data, ...prev]);
       setSelected(data);
@@ -380,13 +343,11 @@ export default function MapPage() {
     }
   };
 
-  const cancelAdd = () => {
-    setPendingPin(null); setShowAdd(false);
-    setAddMode(false); setAddError(""); setAddImages([]);
-  };
+  const cancelAdd = () => { setPendingPin(null); setShowAdd(false); setAddMode(false); setAddError(""); setAddImages([]); };
 
   const openEdit = () => {
-    setEditForm({ title: selected.title, description: selected.description, severity_level: selected.severity_level, status: selected.status });
+    setEditForm({ title: selected.title, description: selected.description,
+      severity_level: selected.severity_level, status: selected.status, gcash_number: selected.gcash_number ?? "" });
     setEditError(""); setShowEdit(true);
   };
 
@@ -398,6 +359,7 @@ export default function MapPage() {
       const data = await disasterService.update(selected.id, {
         title: editForm.title.trim(), description: editForm.description.trim(),
         severity_level: editForm.severity_level, status: editForm.status,
+        gcash_number: editForm.gcash_number?.trim() || null,
       });
       setDisasters((prev) => prev.map((d) => d.id === data.id ? data : d));
       setSelected(data); setShowEdit(false);
@@ -426,15 +388,12 @@ export default function MapPage() {
     d.description?.toLowerCase().includes(search.toLowerCase())
   );
 
-  const flyPosition = selected?.latitude && selected?.longitude
-    ? [selected.latitude, selected.longitude] : null;
+  const flyPosition = selected?.latitude && selected?.longitude ? [selected.latitude, selected.longitude] : null;
 
   return (
     <div className="map-layout">
       <Sidebar />
       <div className="map-page">
-
-        {/* ── TOP BAR ── */}
         <div className="map-topbar">
           <button className="back-btn" onClick={() => window.history.back()}>&#171;</button>
           <div className="map-search">
@@ -443,33 +402,54 @@ export default function MapPage() {
             </svg>
             <input type="text" placeholder="Search disasters…" value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
+
           <div className="map-topbar-right">
+            {/* Add Point — disabled and visually muted when user is muted */}
             <button
-              className={`add-point-btn ${addMode ? "add-point-active" : ""}`}
-              onClick={() => { setAddMode((v) => !v); if (addMode) cancelAdd(); }}
+              className={`add-point-btn ${addMode ? "add-point-active" : ""} ${isMuted ? "add-point-muted" : ""}`}
+              onClick={handleToggleAddMode}
+              disabled={isMuted}
+              title={isMuted ? "You are muted and cannot add disaster points" : undefined}
             >
               {addMode ? (
-                <><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg> Cancel</>
+                <>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <path d="M18 6 6 18M6 6l12 12"/>
+                  </svg>
+                  Cancel
+                </>
               ) : (
-                <><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg> Add Point</>
+                <>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/>
+                  </svg>
+                  {isMuted ? "Muted" : "Add Point"}
+                </>
               )}
             </button>
-            <div className="notif-btn">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-              </svg>
-            </div>
+
+            {/* Notification bell — shows mute alert when muted */}
+            <MuteNotificationBell uid={currentUID} />
+
             <div className="avatar">{username ? username.slice(0, 2).toUpperCase() : "US"}</div>
           </div>
         </div>
 
-        {addMode && !showAdd && (
+        {/* Mute banner — shown below topbar when user is muted */}
+        {isMuted && (
+          <div className="mute-banner">
+            <i className="ti ti-ban" aria-hidden="true" />
+            You have been muted by an admin. Adding disaster points is disabled.
+            Click the bell icon for details.
+          </div>
+        )}
+
+        {addMode && !showAdd && !isMuted && (
           <div className="add-banner">📍 Click anywhere on the map to place a disaster point</div>
         )}
 
         <div className="map-body">
-          {/* ── LEFT PANEL ── */}
+          {/* — rest of panel / map unchanged — */}
           <div className="map-panel">
             {loading && <p className="panel-empty">Loading disasters…</p>}
             {!loading && filtered.length === 0 && <p className="panel-empty">No disasters found.</p>}
@@ -482,7 +462,6 @@ export default function MapPage() {
                     {selected.severity_level} <span className="badge-dot">●</span>
                   </span>
                 </div>
-
                 <div className="card-status-row">
                   <span className={`status-chip status-${selected.status?.toLowerCase()}`}>{selected.status}</span>
                   {isOwner && (
@@ -506,31 +485,23 @@ export default function MapPage() {
                     </div>
                   )}
                 </div>
-
                 <p className="card-date">{formatDate(selected.created_at)}</p>
+                <p className="card-creator">👤 Added by <strong>{selected.creator_username ?? "Unknown"}</strong></p>
                 <p className="card-description">{selected.description}</p>
                 <div className="card-meta">
                   <p><span className="meta-label">Coordinates:</span> {selected.latitude?.toFixed(5)}, {selected.longitude?.toFixed(5)}</p>
                 </div>
-
                 <ProofImages disaster={selected} />
-
-                {/* ── DONATE BUTTON — now opens modal ── */}
-                <button className="donate-btn" onClick={() => setShowDonation(true)}>
-                  💙 DONATE
-                </button>
+                <button className="donate-btn" onClick={() => setShowDonation(true)}>💙 DONATE</button>
               </div>
             )}
 
             <div className="request-list">
               {filtered.map((d) => (
-                <div
-                  key={d.id}
-                  className={`request-list-item ${selected?.id === d.id ? "rli-selected" : ""}`}
-                  onClick={() => setSelected(d)}
-                >
+                <div key={d.id} className={`request-list-item ${selected?.id === d.id ? "rli-selected" : ""}`}
+                  onClick={() => setSelected(d)}>
                   <div className="rli-left">
-                    <span className="rli-dot" style={{ background: getSeverityColor(d.severity_level) }}/>
+                    <span className="rli-dot" style={{ background: getSeverityColor(d.severity_level) }} />
                     <div>
                       <p className="rli-title">{d.title}</p>
                       <p className="rli-date">{formatDate(d.created_at)}</p>
@@ -545,19 +516,29 @@ export default function MapPage() {
             </div>
           </div>
 
-          {/* ── MAP ── */}
-          <div className={`map-container ${addMode ? "map-crosshair" : ""}`}>
+          <div className={`map-container ${addMode && !isMuted ? "map-crosshair" : ""}`}>
             <MapContainer center={DEFAULT_CENTER} zoom={DEFAULT_ZOOM} style={{ height: "100%", width: "100%" }} zoomControl={false}>
-              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; OpenStreetMap contributors' />
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              />
               <FlyTo position={flyPosition} />
-              <ClickHandler addMode={addMode} onMapClick={handleMapClick} />
+              <ClickHandler addMode={addMode && !isMuted} onMapClick={handleMapClick} />
               {filtered.map((d) => d.latitude && d.longitude ? (
-                <Marker key={d.id} position={[d.latitude, d.longitude]} icon={createMarkerIcon(d.severity_level)} eventHandlers={{ click: () => setSelected(d) }}>
+                <Marker key={d.id} position={[d.latitude, d.longitude]}
+                  icon={createMarkerIcon(d.severity_level)}
+                  eventHandlers={{ click: () => setSelected(d) }}>
                   <Popup className="osm-popup">
                     <div className="popup-inner">
                       <p className="popup-title">{d.title}</p>
                       <p className="popup-date">{formatDate(d.created_at)}</p>
+                      <p className="popup-creator">👤 {d.creator_username ?? "Unknown"}</p>
                       <span className="popup-severity" style={{ color: getSeverityColor(d.severity_level) }}>{d.severity_level} ●</span>
+                      {d.gcash_number && (
+                        <div className="popup-gcash">
+                          <i className="ti ti-device-mobile" /><span>{d.gcash_number}</span>
+                        </div>
+                      )}
                     </div>
                   </Popup>
                 </Marker>
@@ -566,14 +547,14 @@ export default function MapPage() {
             </MapContainer>
 
             {showAdd && (
-              <DisasterForm title="New Disaster Point" coords={pendingPin} form={addForm} setForm={setAddForm}
-                images={addImages} setImages={setAddImages} onSave={handleAdd} onCancel={cancelAdd}
-                saving={addSaving} error={addError} showImageUpload={true} />
+              <DisasterForm title="New Disaster Point" coords={pendingPin}
+                form={addForm} setForm={setAddForm} images={addImages} setImages={setAddImages}
+                onSave={handleAdd} onCancel={cancelAdd} saving={addSaving} error={addError} showImageUpload={true} />
             )}
             {showEdit && (
-              <DisasterForm title="Edit Disaster Point" coords={null} form={editForm} setForm={setEditForm}
-                images={[]} setImages={() => {}} onSave={handleEdit} onCancel={() => setShowEdit(false)}
-                saving={editSaving} error={editError} showImageUpload={false} />
+              <DisasterForm title="Edit Disaster Point" coords={null}
+                form={editForm} setForm={setEditForm} images={[]} setImages={() => {}}
+                onSave={handleEdit} onCancel={() => setShowEdit(false)} saving={editSaving} error={editError} showImageUpload={false} />
             )}
             {confirmDelete && (
               <ConfirmDialog message={`Delete "${selected?.title}"? This cannot be undone.`}
@@ -583,13 +564,8 @@ export default function MapPage() {
         </div>
       </div>
 
-      {/* ── Donation modal — rendered outside map-body so it covers full screen ── */}
       {showDonation && selected && (
-        <DonationModal
-          disaster={selected}
-          currentUID={currentUID}
-          onClose={() => setShowDonation(false)}
-        />
+        <DonationModal disaster={selected} onClose={() => setShowDonation(false)} />
       )}
     </div>
   );

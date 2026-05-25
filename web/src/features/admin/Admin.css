@@ -629,3 +629,24 @@ body {
   gap: 5px;
 }
 .admin-btn i { font-size: 12px; }
+
+/* ── Add to the bottom of Admin.css ── */
+
+/* Disaster link in donations table */
+.adon-disaster-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2563eb;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: color .14s;
+}
+.adon-disaster-link i { font-size: 12px; flex-shrink: 0; }
+.adon-disaster-link:hover { color: #1d4ed8; text-decoration: underline; }

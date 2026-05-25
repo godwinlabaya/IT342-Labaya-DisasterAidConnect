@@ -3,16 +3,16 @@ import { supabase } from "../../supabaseClient";
 import "./Admin.css";
 
 const menuItems = [
-  { icon: "ti-layout-dashboard", label: "Dashboard",    path: "/admin/dashboard" },
-  { icon: "ti-map-2",            label: "Disasters",    path: "/admin/disasters" },
-  { icon: "ti-clipboard-list",   label: "Aid Requests", path: "/admin/aid-requests" },
-  { icon: "ti-heart",            label: "Donations",    path: "/admin/donations" },
-  { icon: "ti-users",            label: "Users",        path: "/admin/users" },
+  { icon: "ti-layout-dashboard", label: "Dashboard", path: "/admin/dashboard" },
+  { icon: "ti-map-2",            label: "Disasters",  path: "/admin/disasters"  },
+  { icon: "ti-map-pin",          label: "Map",        path: "/admin/map"        },
+  { icon: "ti-heart",            label: "Donations",  path: "/admin/donations"  },
+  { icon: "ti-users",            label: "Users",      path: "/admin/users"      },
 ];
 
 export default function AdminSidebar({ onLogout }) {
-  const navigate  = useNavigate();
-  const location  = useLocation();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const defaultLogout = async () => {
     await supabase.auth.signOut();

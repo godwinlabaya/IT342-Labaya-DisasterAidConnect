@@ -6,7 +6,10 @@ const donationService = {
   async createCheckout({ userId, disasterId, amount }) {
     const response = await fetch("https://it342-labaya-disasteraidconnect.onrender.com/api/payments/create", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
       body: JSON.stringify({ userId, disasterId, amount }),
     });
     if (!response.ok) {

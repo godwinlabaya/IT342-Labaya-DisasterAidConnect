@@ -5,6 +5,7 @@ import { supabase } from "../../supabaseClient";
 import { useAuth } from "../auth/useAuth";
 import disasterService from "../disaster/disasterService";
 import Sidebar from "../../shared/components/Sidebar";
+import MuteNotificationBell from "../../shared/components/MuteNotificationBell";
 
 // ── Toast ─────────────────────────────────────────────────────────────────────
 function Toast({ message, type }) {
@@ -178,10 +179,13 @@ export default function Dashboard() {
       const { data: myDonations } = await supabase
         .from("donations")
         .select("*")
-        .eq("user_id", currentUID)
-        .order("donated_at", { ascending: false })
-        .limit(5);
-      setDonations(myDonations ?? []);
+        .eq("user_id", currentUID);
+      const sorted = (myDonations ?? []).sort((a, b) => {
+        if (a.status === "Completed" && b.status !== "Completed") return -1;
+        if (b.status === "Completed" && a.status !== "Completed") return 1;
+        return 0;
+      });
+      setDonations(sorted.slice(0, 5));
     } catch (err) {
       console.error("Dashboard fetch error:", err.message);
     } finally {
@@ -216,10 +220,7 @@ export default function Dashboard() {
             <p>Here's what's happening in your area.</p>
           </div>
           <div className="profile">
-            <button className="notification-icon" aria-label="Notifications">
-              <i className="ti ti-bell" aria-hidden="true" />
-              <span className="notif-dot" />
-            </button>
+            <MuteNotificationBell uid={currentUID} />
             <button className="notification-icon" aria-label="Refresh" onClick={fetchData}>
               <i className="ti ti-refresh" aria-hidden="true" />
             </button>

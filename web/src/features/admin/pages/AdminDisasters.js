@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../../../supabaseClient";
 import { useAdminAuth } from "../useAdminAuth";
 import AdminSidebar from "../AdminSidebar";
@@ -70,6 +71,7 @@ function formatDate(iso) {
 
 export default function AdminDisasters() {
   const { loading, authed } = useAdminAuth();
+  const navigate = useNavigate();
 
   const [disasters,   setDisasters]   = useState([]);
   const [usersMap,    setUsersMap]    = useState({});
@@ -122,6 +124,11 @@ export default function AdminDisasters() {
     }
     setToDelete(null);
     setDeleting(false);
+  };
+
+  // ── Navigate to admin map and focus this disaster ──────────────────────────
+  const handleViewOnMap = (disaster) => {
+    navigate("/admin/map", { state: { focusDisasterId: disaster.id } });
   };
 
   const filtered = disasters.filter((d) => {
@@ -195,7 +202,7 @@ export default function AdminDisasters() {
                     <th>Status</th>
                     <th>Coordinates</th>
                     <th>Date</th>
-                    <th>Action</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -227,9 +234,25 @@ export default function AdminDisasters() {
                         <td className="admin-td-mono">{d.latitude?.toFixed(4)}, {d.longitude?.toFixed(4)}</td>
                         <td>{formatDate(d.created_at)}</td>
                         <td>
-                          <button className="admin-btn admin-btn-danger" onClick={() => setToDelete(d)} disabled={deleting}>
-                            <i className="ti ti-trash" aria-hidden="true" /> Delete
-                          </button>
+                          <div className="admin-action-btns">
+                            {/* ── View on Map ── */}
+                            <button
+                              className="admin-btn admin-btn-primary"
+                              onClick={() => handleViewOnMap(d)}
+                              title="View this point on the admin map"
+                            >
+                              <i className="ti ti-map-pin" aria-hidden="true" /> View on Map
+                            </button>
+                            {/* ── Delete ── */}
+                            <button
+                              className="admin-btn admin-btn-danger"
+                              onClick={() => setToDelete(d)}
+                              disabled={deleting}
+                              title="Delete this disaster"
+                            >
+                              <i className="ti ti-trash" aria-hidden="true" /> Delete
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );

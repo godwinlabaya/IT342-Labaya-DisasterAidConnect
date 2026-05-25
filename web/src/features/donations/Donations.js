@@ -11,7 +11,7 @@ function Toast({ message, type }) {
   if (!message) return null;
   return (
     <div className={`toast toast-${type}`}>
-      <span className="toast-icon">{type === "success" ? "✅" : "❌"}</span>
+      <i className={`ti ${type === "success" ? "ti-circle-check" : "ti-alert-circle"} toast-icon`} aria-hidden="true" />
       <span>{message}</span>
     </div>
   );
@@ -33,10 +33,10 @@ function formatAmount(amount) {
 }
 
 function getStatusStyle(status) {
-  if (status === "Completed") return { bg: "#dcfce7", color: "#166534", icon: "✅" };
-  if (status === "Failed")    return { bg: "#fee2e2", color: "#991b1b", icon: "❌" };
-  if (status === "Refunded")  return { bg: "#e0e7ff", color: "#3730a3", icon: "↩️" };
-  return                             { bg: "#fef9c3", color: "#854d0e", icon: "⏳" };
+  if (status === "Completed") return { bg: "#f0fdf4", color: "#15803d", icon: "ti-circle-check" };
+  if (status === "Failed")    return { bg: "#fef2f2", color: "#b91c1c", icon: "ti-circle-x" };
+  if (status === "Refunded")  return { bg: "#eff6ff", color: "#1d4ed8", icon: "ti-refresh" };
+  return                             { bg: "#fffbeb", color: "#92400e", icon: "ti-clock" };
 }
 
 function getSeverityColor(level) {
@@ -55,14 +55,17 @@ function DonationCard({ donation, username, onGoToMap }) {
     <div className="don-card">
       <div className="don-card-header">
         <div className="don-card-left">
-          <div className="don-avatar">💙</div>
+          <div className="don-avatar">
+            <i className="ti ti-heart" aria-hidden="true" />
+          </div>
           <div>
             <p className="don-amount">{formatAmount(donation.amount)}</p>
             <p className="don-donor">by {username ?? "You"}</p>
           </div>
         </div>
         <span className="don-status-chip" style={{ background: status.bg, color: status.color }}>
-          {status.icon} {donation.status}
+          <i className={`ti ${status.icon}`} aria-hidden="true" />
+          {donation.status}
         </span>
       </div>
 
@@ -81,12 +84,9 @@ function DonationCard({ donation, username, onGoToMap }) {
               <span className="don-disaster-title">{disaster.title}</span>
             </div>
           </div>
-          <button
-            className="don-map-btn"
-            onClick={() => onGoToMap(disaster)}
-            title="View on map"
-          >
-            🗺️ View on Map
+          <button className="don-map-btn" onClick={() => onGoToMap(disaster)}>
+            <i className="ti ti-map-pin" aria-hidden="true" />
+            View on Map
           </button>
         </div>
       )}
@@ -98,7 +98,10 @@ function DonationCard({ donation, username, onGoToMap }) {
         </div>
         <div className="don-meta-item">
           <span className="don-label">Method</span>
-          <span className="don-meta-value don-gcash">💳 GCash</span>
+          <span className="don-meta-value don-gcash">
+            <i className="ti ti-credit-card" aria-hidden="true" />
+            GCash
+          </span>
         </div>
       </div>
     </div>
@@ -109,13 +112,17 @@ function DonationCard({ donation, username, onGoToMap }) {
 function EmptyState({ onGoMap }) {
   return (
     <div className="don-empty">
-      <div className="don-empty-icon">💙</div>
+      <div className="don-empty-icon">
+        <i className="ti ti-heart" aria-hidden="true" />
+      </div>
       <h3 className="don-empty-title">No donations yet</h3>
       <p className="don-empty-sub">
-        Go to the map, select a disaster point, and click Donate to support relief efforts.
+        Donations made via the mobile app will appear here automatically.
+        On desktop, you can view GCash numbers on the map and donate via your phone.
       </p>
       <button className="don-go-map-btn" onClick={onGoMap}>
-        🗺️ Go to Map
+        <i className="ti ti-map-pin" aria-hidden="true" />
+        View Disaster Map
       </button>
     </div>
   );
@@ -126,12 +133,12 @@ export default function DonationsPage() {
   const navigate       = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const [donations,   setDonations]   = useState([]);
-  const [username,    setUsername]    = useState("");
-  const [currentUID,  setCurrentUID]  = useState(null);
-  const [loading,     setLoading]     = useState(true);
-  const [activeTab,   setActiveTab]   = useState("All");
-  const [toast,       setToast]       = useState({ message: "", type: "" });
+  const [donations,  setDonations]  = useState([]);
+  const [username,   setUsername]   = useState("");
+  const [currentUID, setCurrentUID] = useState(null);
+  const [loading,    setLoading]    = useState(true);
+  const [activeTab,  setActiveTab]  = useState("All");
+  const [toast,      setToast]      = useState({ message: "", type: "" });
 
   const STATUS_TABS = ["All", "Completed", "Pending", "Failed"];
 
@@ -140,19 +147,15 @@ export default function DonationsPage() {
     setTimeout(() => setToast({ message: "", type: "" }), 4000);
   };
 
-  // ── Handle PayMongo redirect back ─────────────────────────────────────────
+  // ── Handle PayMongo redirect ───────────────────────────────────────────────
   useEffect(() => {
-    const status     = searchParams.get("status");
-    const donationId = searchParams.get("donation_id");
+    const status = searchParams.get("status");
     if (status === "success") {
-      showToast("🎉 Donation successful! Thank you for your support.", "success");
+      showToast("Donation successful! Thank you for your support.", "success");
     } else if (status === "cancelled") {
       showToast("Donation was cancelled.", "error");
     }
-    // Clean URL params
-    if (status) {
-      navigate("/donations", { replace: true });
-    }
+    if (status) navigate("/donations", { replace: true });
   }, [searchParams, navigate]);
 
   // ── Auth & fetch ──────────────────────────────────────────────────────────
@@ -185,7 +188,6 @@ export default function DonationsPage() {
 
   useEffect(() => { fetchDonations(); }, [fetchDonations]);
 
-  // ── Go to map centered on disaster ────────────────────────────────────────
   const handleGoToMap = (disaster) => {
     navigate("/map", { state: { focusDisasterId: disaster.id } });
   };
@@ -216,11 +218,15 @@ export default function DonationsPage() {
         {/* ── Header ── */}
         <div className="don-page-header">
           <div>
-            <h1 className="don-page-title">💙 My Donations</h1>
+            <h1 className="don-page-title">
+              <i className="ti ti-heart" aria-hidden="true" />
+              My Donations
+            </h1>
             <p className="don-page-sub">Track your contributions to disaster relief efforts</p>
           </div>
           <button className="don-go-map-btn" onClick={() => navigate("/map")}>
-            🗺️ Donate on Map
+            <i className="ti ti-map-pin" aria-hidden="true" />
+            Donate on Map
           </button>
         </div>
 
@@ -286,6 +292,7 @@ export default function DonationsPage() {
             </div>
           )}
         </div>
+
       </div>
     </div>
   );

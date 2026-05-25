@@ -725,3 +725,56 @@
   .req-grid { grid-template-columns: 1fr; }
   .req-page-header { flex-direction: column; gap: 14px; align-items: flex-start; }
 }
+
+/* ── Resolve button (card) ── */
+.req-resolve-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: #f0fdf4;
+  color: #15803d;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .14s;
+}
+.req-resolve-btn:hover:not(:disabled) { background: #dcfce7; }
+.req-resolve-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ── Resolve button (detail modal) ── */
+.req-resolve-modal-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f0fdf4;
+  color: #15803d;
+  border: none;
+  border-radius: 9px;
+  padding: 8px 16px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .14s;
+}
+.req-resolve-modal-btn:hover:not(:disabled) { background: #dcfce7; }
+.req-resolve-modal-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.req-resolve-confirm-btn {
+  background: #16a34a;
+  color: #fff;
+  border: none;
+  border-radius: 9px;
+  padding: 9px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .14s;
+}
+.req-resolve-confirm-btn:hover:not(:disabled) { background: #15803d; }
+.req-resolve-confirm-btn:disabled { opacity: .5; cursor: not-allowed; }

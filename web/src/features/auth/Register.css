@@ -312,3 +312,364 @@ body {
   .register-left h2 { font-size: 24px; }
   .register-card h2 { font-size: 20px; }
 }
+
+.register-card select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1.5px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.05);
+  color: #ffffff;
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+  cursor: pointer;
+  appearance: none;
+  transition: border-color .18s, background .18s, box-shadow .18s;
+}
+
+.register-card select:focus {
+  border-color: #3b82f6;
+  background: rgba(255,255,255,.08);
+  box-shadow: 0 0 0 3px rgba(59,130,246,.18);
+}
+
+/* Style the dropdown options — dark bg so they're readable */
+.register-card select option {
+  background: #1f2937;
+  color: #ffffff;
+}
+
+/* The empty placeholder option */
+.register-card select option[value=""] {
+  color: rgba(255,255,255,.35);
+}
+
+/* ══════════════════════════════════════════════════════
+   ADD TO BOTTOM OF Login.css AND Register.css
+   ══════════════════════════════════════════════════════ */
+
+/* ── Password eye toggle ── */
+.password-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrap input {
+  width: 100%;
+  padding-right: 40px !important; /* make room for the eye */
+}
+
+.password-eye {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,.35);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color .15s;
+  line-height: 1;
+}
+.password-eye i { font-size: 16px; }
+.password-eye:hover { color: rgba(255,255,255,.7); }
+
+/* ── Forgot password link (button styled as link) ── */
+.forgot-link {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,.38);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  transition: color .14s;
+  white-space: nowrap;
+}
+.forgot-link:hover { color: #60a5fa; }
+
+/* ══════════════════════════════════════════════════════
+   FORGOT PASSWORD MODAL — add to Login.css only
+   ══════════════════════════════════════════════════════ */
+
+.fp-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fpFadeIn .2s ease;
+}
+@keyframes fpFadeIn { from { opacity:0; } to { opacity:1; } }
+
+.fp-modal {
+  position: relative;
+  background: #1a2535;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 16px;
+  padding: 32px 28px 28px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 24px 64px rgba(0,0,0,.4);
+  animation: fpSlideUp .22s ease;
+}
+@keyframes fpSlideUp {
+  from { opacity:0; transform: translateY(16px) scale(.97); }
+  to   { opacity:1; transform: none; }
+}
+
+.fp-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: rgba(255,255,255,.07);
+  border: none;
+  color: rgba(255,255,255,.5);
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background .14s, color .14s;
+}
+.fp-close i { font-size: 14px; }
+.fp-close:hover { background: rgba(255,255,255,.12); color: #fff; }
+
+/* Header */
+.fp-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.fp-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 13px;
+  background: rgba(59,130,246,.18);
+  color: #60a5fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+.fp-icon i { font-size: 22px; }
+
+.fp-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+.fp-sub {
+  font-size: 13px;
+  color: rgba(255,255,255,.4);
+  margin: 0;
+  max-width: 280px;
+  line-height: 1.5;
+}
+
+/* Step indicators */
+.fp-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.fp-step {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,.15);
+  background: transparent;
+  color: rgba(255,255,255,.3);
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .2s;
+}
+.fp-step i { font-size: 12px; }
+
+.fp-step-active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: #fff;
+}
+
+/* Body */
+.fp-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.fp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fp-field label {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,.4);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.fp-field input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1.5px solid rgba(255,255,255,.1);
+  background: rgba(255,255,255,.06);
+  color: #fff;
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+  transition: border-color .16s, background .16s, box-shadow .16s;
+}
+.fp-field input:focus {
+  border-color: #3b82f6;
+  background: rgba(255,255,255,.09);
+  box-shadow: 0 0 0 3px rgba(59,130,246,.18);
+}
+.fp-field input::placeholder { color: rgba(255,255,255,.2); }
+
+.fp-hint {
+  font-size: 11px;
+  color: rgba(255,255,255,.3);
+  margin: 0;
+}
+
+/* Question box */
+.fp-question-box {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 9px;
+  padding: 12px 14px;
+}
+
+.fp-question-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,.35);
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  margin: 0 0 5px;
+}
+
+.fp-question-text {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Error */
+.fp-error {
+  font-size: 12px;
+  color: #fca5a5;
+  background: rgba(239,68,68,.12);
+  border: 1px solid rgba(239,68,68,.25);
+  border-radius: 7px;
+  padding: 8px 12px;
+  margin: 0;
+}
+
+/* Primary button */
+.fp-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: #fff;
+  color: #111827;
+  border: none;
+  border-radius: 8px;
+  padding: 11px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .15s, transform .15s;
+  letter-spacing: .03em;
+}
+.fp-btn i { font-size: 14px; }
+.fp-btn:hover:not(:disabled) { background: #f1f5f9; }
+.fp-btn:active { transform: scale(.98); }
+.fp-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* Back link */
+.fp-back {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,.35);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color .14s;
+  padding: 0;
+}
+.fp-back i { font-size: 13px; }
+.fp-back:hover { color: rgba(255,255,255,.65); }
+
+/* Success */
+.fp-success {
+  align-items: center;
+  text-align: center;
+}
+
+.fp-success-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(34,197,94,.15);
+  color: #22c55e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+}
+.fp-success-icon i { font-size: 26px; }
+
+.fp-success-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+.fp-success-sub {
+  font-size: 13px;
+  color: rgba(255,255,255,.45);
+  margin: 0;
+  line-height: 1.6;
+  max-width: 280px;
+}
