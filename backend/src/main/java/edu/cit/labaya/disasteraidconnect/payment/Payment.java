@@ -36,7 +36,10 @@ public class Payment {
     @Column(name = "transaction_reference", unique = true)
     private String transactionReference;
 
-    // ── Getters & Setters ──────────────────────────────────────────────────────
+    @Column(name = "payment_intent_id")
+    private String paymentIntentId;
+
+    // ── Getters & Setters ─────────────────────────────────────────────────────
 
     public UUID getId()                                        { return id; }
     public void setId(UUID id)                                 { this.id = id; }
@@ -61,4 +64,7 @@ public class Payment {
 
     public String getTransactionReference()                    { return transactionReference; }
     public void   setTransactionReference(String ref)          { this.transactionReference = ref; }
+
+    public String getPaymentIntentId()                         { return paymentIntentId; }
+    public void   setPaymentIntentId(String paymentIntentId)   { this.paymentIntentId = paymentIntentId; }
 }
