@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    bg_btn_navy.xml
+    Navy filled rounded rectangle for selected quick-chip buttons in donate dialog.
+    Matches web .donation-quick-active { background: var(-blue); }
+    Here uses colorNavy (#111827) to match the rest of the app's primary action color.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#111827"/>
+    <corners android:radius="8dp"/>
+</shape>

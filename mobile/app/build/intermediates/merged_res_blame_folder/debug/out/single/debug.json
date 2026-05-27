@@ -1,0 +1,330 @@
+[
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_stat_icon_purple.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_stat_icon_purple.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_feature_icon.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_feature_icon.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_badge_red.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_badge_red.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_badge_critical.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_badge_critical.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_bottom_sheet.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_bottom_sheet.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_badge_orange.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_badge_orange.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/layout_item_donation_card.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/layout/item_donation_card.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/mipmap-xhdpi_ic_launcher.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/mipmap-xhdpi/ic_launcher.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/layout_activity_register.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/layout/activity_register.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/layout_activity_dashboard.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/layout/activity_dashboard.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/mipmap-xxhdpi_ic_launcher_round.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/mipmap-xxhdpi/ic_launcher_round.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/menu_bottom_nav_admin.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/menu/bottom_nav_admin.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/mipmap-xxxhdpi_ic_launcher.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/mipmap-xxxhdpi/ic_launcher.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_stat_icon_blue.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_stat_icon_blue.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/layout_activity_disaster_map.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/layout/activity_disaster_map.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_ic_nav_map.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/ic_nav_map.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_spinner_background.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/spinner_background.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_spinner.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_spinner.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/layout_item_disaster_row.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/layout/item_disaster_row.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/color_chip_text_selector.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/color/chip_text_selector.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_logo_box.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_logo_box.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_badge_active.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_badge_active.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_ic_app_icon.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/ic_app_icon.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/mipmap-hdpi_ic_launcher.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/mipmap-hdpi/ic_launcher.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_badge_gray.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_badge_gray.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/layout_item_aid_request_row.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/layout/item_aid_request_row.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_tab_active.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_tab_active.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/layout_layout_mute_panel.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/layout/layout_mute_panel.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_admin_badge.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_admin_badge.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_avatar_small.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_avatar_small.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_stat_icon_red.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_stat_icon_red.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/layout_activity_admin_dashboard.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/layout/activity_admin_dashboard.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/layout_activity_login.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/layout/activity_login.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_card_elevated.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_card_elevated.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/layout_item_map_disaster_row.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/layout/item_map_disaster_row.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_mute_banner.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_mute_banner.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_ic_nav_requests.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/ic_nav_requests.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/mipmap-xxxhdpi_ic_launcher_round.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/mipmap-xxxhdpi/ic_launcher_round.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/layout_dialog_edit_disaster.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/layout/dialog_edit_disaster.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_badge_purple.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_badge_purple.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/mipmap-xxhdpi_ic_launcher.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/mipmap-xxhdpi/ic_launcher.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/mipmap-mdpi_ic_launcher_round.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/mipmap-mdpi/ic_launcher_round.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_drag_handle.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_drag_handle.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_ic_nav_home.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/ic_nav_home.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_nav_card.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_nav_card.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/layout_dialog_donate.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/layout/dialog_donate.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/mipmap-mdpi_ic_launcher.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/mipmap-mdpi/ic_launcher.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_btn_navy.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_btn_navy.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/layout_dialog_add_disaster.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/layout/dialog_add_disaster.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_badge_green.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_badge_green.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/mipmap-xhdpi_ic_launcher_round.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/mipmap-xhdpi/ic_launcher_round.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_stat_icon_orange.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_stat_icon_orange.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/layout_item_user_row.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/layout/item_user_row.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_list_item.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_list_item.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_avatar.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_avatar.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/menu_bottom_nav_menu.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/menu/bottom_nav_menu.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/color_chip_bg_selector.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/color/chip_bg_selector.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/layout_item_notification.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/layout/item_notification.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/layout_activity_donation.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/layout/activity_donation.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_tab_inactive.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_tab_inactive.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_badge_resolved.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_badge_resolved.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_description_box.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_description_box.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/layout_activity_admin_list.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/layout/activity_admin_list.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/mipmap-hdpi_ic_launcher_round.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/mipmap-hdpi/ic_launcher_round.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/layout_activity_admin_map.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/layout/activity_admin_map.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_badge_high.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_badge_high.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_ic_nav_donations.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/ic_nav_donations.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_ic_nav_admin.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/ic_nav_admin.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_stat_icon_green.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_stat_icon_green.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/layout_item_dashboard_row.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/layout/item_dashboard_row.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_icon_btn.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_icon_btn.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_badge_medium.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_badge_medium.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_badge_low.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_badge_low.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_card.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_card.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_donation_icon.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_donation_icon.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/layout_dialog_mute_user.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/layout/dialog_mute_user.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/color_bottom_nav_color.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/color/bottom_nav_color.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/layout_activity_aid_request.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/layout/activity_aid_request.xml"
+    },
+    {
+        "merged": "edu.cit.labaya.disasteraidconnect.app-merged_res-38:/drawable_bg_dot.xml.flat",
+        "source": "edu.cit.labaya.disasteraidconnect.app-main-40:/drawable/bg_dot.xml"
+    }
+]

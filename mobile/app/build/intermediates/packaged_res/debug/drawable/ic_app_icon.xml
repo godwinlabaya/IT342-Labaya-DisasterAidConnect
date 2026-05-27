@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Red background circle -->
+    <path
+        android:fillColor="#0d1117"
+        android:pathData="M54,4 C27,4 4,27 4,54 C4,81 27,104 54,104 C81,104 104,81 104,54 C104,27 81,4 54,4Z"/>
+
+    <!-- White map pin -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,22 C42,22 32,32 32,44 C32,58 54,82 54,82 C54,82 76,58 76,44 C76,32 66,22 54,22Z"/>
+
+    <!-- Red inner circle -->
+    <path
+        android:fillColor="#0d1117"
+        android:pathData="M54,36 C49,36 44,41 44,46 C44,51 49,56 54,56 C59,56 64,51 64,46 C64,41 59,36 54,36Z"/>
+</vector>

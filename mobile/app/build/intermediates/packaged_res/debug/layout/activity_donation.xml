@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- activity_donation.xml — matches web My Donations page -->
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground">
+
+    <!-- Top bar (white, matches web) -->
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:background="@color/colorSurface"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="20dp"
+        android:paddingEnd="16dp"
+        android:elevation="2dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <requestFocus/>
+        </TextView>
+
+        <!-- Title block -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="10"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="💙  "
+                    android:textSize="20sp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="My Donations"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Track your contributions to disaster relief efforts"
+                android:textColor="@color/colorTextSecondary"
+                android:textSize="12sp"/>
+        </LinearLayout>
+
+        <!-- Donate on Map button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDonateOnMap"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="📍 Map"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            app:backgroundTint="@color/colorNavy"
+            app:cornerRadius="8dp"/>
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_marginTop="64dp"
+        android:layout_marginBottom="56dp"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="16dp">
+
+            <!-- 4 stat cards -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="16dp"
+                android:layout_marginBottom="16dp">
+
+                <!-- Total Donations -->
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:background="@drawable/bg_card"
+                    android:orientation="vertical" android:padding="14dp" android:layout_marginEnd="4dp">
+                    <TextView android:id="@+id/tvTotalDonations"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="0" android:textColor="@color/colorTextPrimary"
+                        android:textSize="24sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="TOTAL" android:textColor="@color/colorTextMuted"
+                        android:textSize="9sp" android:letterSpacing="0.08" android:textAllCaps="true"
+                        android:layout_marginTop="2dp"/>
+                </LinearLayout>
+
+                <!-- Total Contributed -->
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:background="@drawable/bg_card"
+                    android:orientation="vertical" android:padding="14dp" android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp">
+                    <TextView android:id="@+id/tvTotalContributed"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="₱0" android:textColor="@color/colorSuccess"
+                        android:textSize="20sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="CONTRIBUTED" android:textColor="@color/colorTextMuted"
+                        android:textSize="9sp" android:letterSpacing="0.08" android:textAllCaps="true"
+                        android:layout_marginTop="2dp"/>
+                </LinearLayout>
+
+                <!-- Pending -->
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:background="@drawable/bg_card"
+                    android:orientation="vertical" android:padding="14dp" android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp">
+                    <TextView android:id="@+id/tvPending"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="0" android:textColor="@color/colorSeverityMedium"
+                        android:textSize="24sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="PENDING" android:textColor="@color/colorTextMuted"
+                        android:textSize="9sp" android:letterSpacing="0.08" android:textAllCaps="true"
+                        android:layout_marginTop="2dp"/>
+                </LinearLayout>
+
+                <!-- Disasters Supported -->
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:background="@drawable/bg_card"
+                    android:orientation="vertical" android:padding="14dp" android:layout_marginStart="4dp">
+                    <TextView android:id="@+id/tvDisastersSupported"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="0" android:textColor="@color/colorTextPrimary"
+                        android:textSize="24sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="SUPPORTED" android:textColor="@color/colorTextMuted"
+                        android:textSize="9sp" android:letterSpacing="0.08" android:textAllCaps="true"
+                        android:layout_marginTop="2dp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Filter tabs -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:layout_marginBottom="12dp">
+
+                <TextView android:id="@+id/tabAll"
+                    android:layout_width="wrap_content" android:layout_height="32dp"
+                    android:text="All" android:textSize="13sp" android:textStyle="bold"
+                    android:gravity="center" android:paddingStart="14dp" android:paddingEnd="14dp"
+                    android:background="@drawable/bg_tab_active"
+                    android:textColor="@color/colorTextPrimary" android:layout_marginEnd="6dp"/>
+                <TextView android:id="@+id/tabCompleted"
+                    android:layout_width="wrap_content" android:layout_height="32dp"
+                    android:text="Completed" android:textSize="13sp" android:gravity="center"
+                    android:paddingStart="14dp" android:paddingEnd="14dp"
+                    android:background="@drawable/bg_tab_inactive"
+                    android:textColor="@color/colorTextSecondary" android:layout_marginEnd="6dp"/>
+                <TextView android:id="@+id/tabPending"
+                    android:layout_width="wrap_content" android:layout_height="32dp"
+                    android:text="Pending" android:textSize="13sp" android:gravity="center"
+                    android:paddingStart="14dp" android:paddingEnd="14dp"
+                    android:background="@drawable/bg_tab_inactive"
+                    android:textColor="@color/colorTextSecondary" android:layout_marginEnd="6dp"/>
+                <TextView android:id="@+id/tabFailed"
+                    android:layout_width="wrap_content" android:layout_height="32dp"
+                    android:text="Failed" android:textSize="13sp" android:gravity="center"
+                    android:paddingStart="14dp" android:paddingEnd="14dp"
+                    android:background="@drawable/bg_tab_inactive"
+                    android:textColor="@color/colorTextSecondary"/>
+            </LinearLayout>
+
+            <!-- Donation list (RecyclerView) -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvDonations"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:nestedScrollingEnabled="false"/>
+
+            <ProgressBar android:id="@+id/progressBar"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal" android:visibility="gone"
+                android:indeterminateTint="@color/colorPrimary" android:layout_marginTop="24dp"/>
+
+            <TextView android:id="@+id/tvEmpty"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="No donations yet." android:textColor="@color/colorTextMuted"
+                android:textSize="14sp" android:gravity="center" android:padding="32dp"
+                android:visibility="gone"/>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Bottom Nav -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_gravity="bottom" android:background="@color/colorSurface"
+        app:menu="@menu/bottom_nav_menu" app:itemIconTint="@color/bottom_nav_color"
+        app:itemTextColor="@color/bottom_nav_color" app:labelVisibilityMode="labeled"
+        app:elevation="8dp"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

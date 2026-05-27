@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="severity_levels">
+        <item>Low</item>
+        <item>Medium</item>
+        <item>High</item>
+        <item>Critical</item>
+    </string-array>
+    <string-array name="disaster_statuses">
+        <item>Active</item>
+        <item>Monitoring</item>
+        <item>Resolved</item>
+    </string-array>
+</resources>

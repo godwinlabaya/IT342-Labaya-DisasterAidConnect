@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    activity_disaster_map.xml — User Disaster Map
+    ─────────────────────────────────────────────
+    Layout structure (matches web MapPage exactly):
+      TopBar: [Search] [Add Point] [Bell🔔] [Avatar]
+      MuteBanner (hidden unless muted)
+      Body:
+        BottomSheet (peek 160dp): disaster list + detail card
+        MapView (full screen behind sheet)
+      BottomNav
+
+    Key differences from web:
+      - BottomSheet replaces left panel (mobile-first)
+      - Bell icon opens popup panel (layout_mute_bell_panel.xml)
+      - Donate opens dialog_donate.xml (with amount + GCash deep-link)
+-->
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground">
+
+    <!-- ══ TOP BAR ══════════════════════════════════════════════════════════ -->
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/colorSurface"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:elevation="4dp">
+
+        <!-- Search bar — rounded pill, matches web .map-search -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:boxCornerRadiusTopStart="20dp"
+            app:boxCornerRadiusTopEnd="20dp"
+            app:boxCornerRadiusBottomStart="20dp"
+            app:boxCornerRadiusBottomEnd="20dp"
+            app:boxStrokeColor="@color/colorBorder"
+            app:hintEnabled="false"
+            android:layout_marginEnd="8dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etSearch"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Search disasters..."
+                android:textSize="13sp"
+                android:inputType="text"
+                android:imeOptions="actionSearch"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:background="@android:color/transparent"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Add Point button — matches web .add-point-btn navy -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAddPoint"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="+ Add"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            app:backgroundTint="@color/colorNavy"
+            app:cornerRadius="8dp"
+            android:layout_marginEnd="8dp"/>
+
+        <!-- Bell icon — shows red dot when muted, matches web MuteNotificationBell -->
+        <FrameLayout
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="8dp">
+
+            <TextView
+                android:id="@+id/btnBell"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:text="🔔"
+                android:textSize="17sp"
+                android:gravity="center"
+                android:background="@drawable/bg_card"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <!-- Red dot — shown when muted (matches web .notif-dot) -->
+            <View
+                android:id="@+id/bellDot"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/bg_stat_icon_red"
+                android:visibility="gone"/>
+        </FrameLayout>
+
+        <!-- Avatar initials — matches web .avatar -->
+        <TextView
+            android:id="@+id/tvAvatar"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:text="US"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:background="@drawable/bg_avatar_small"
+            android:letterSpacing="0.05"/>
+    </LinearLayout>
+
+    <!-- ══ MAIN CONTENT (below topbar, above bottom nav) ════════════════════ -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="56dp"
+        android:layout_marginBottom="56dp">
+
+        <!-- OSMDroid MapView — full screen behind bottom sheet -->
+        <org.osmdroid.views.MapView
+            android:id="@+id/mapView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <!-- ── MUTE BANNER (hidden unless muted) ───────────────────────────
+             Matches web .mute-banner — orange/amber strip below topbar
+        -->
+        <LinearLayout
+            android:id="@+id/muteBanner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:background="@drawable/bg_mute_banner"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="12dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🔇  "
+                android:textSize="14sp"
+                android:layout_marginEnd="4dp"/>
+
+            <TextView
+                android:id="@+id/tvMuteMessage"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="You have been muted by an admin. Adding disaster points is disabled. Tap the bell for details."
+                android:textColor="#92400e"
+                android:textSize="12sp"
+                android:lineSpacingMultiplier="1.3"/>
+        </LinearLayout>
+
+        <!-- My Location FAB -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabMyLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:layout_marginBottom="180dp"
+            android:src="@android:drawable/ic_menu_mylocation"
+            app:backgroundTint="@color/colorSurface"
+            app:tint="@color/colorNavy"
+            app:elevation="4dp"/>
+
+    </FrameLayout>
+
+    <!-- ══ BOTTOM SHEET: disaster list + detail ═════════════════════════════
+         Peek at 160dp to show disaster count + top of list.
+         Drag up to see full list + selected detail card.
+         Matches web .map-panel behavior on mobile.
+    -->
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="56dp"
+        android:layout_marginBottom="56dp">
+
+        <LinearLayout
+            android:id="@+id/bottomSheet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_bottom_sheet"
+            android:orientation="vertical"
+            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+            app:behavior_peekHeight="160dp"
+            app:behavior_hideable="false">
+
+            <!-- Drag handle -->
+            <View
+                android:layout_width="40dp"
+                android:layout_height="4dp"
+                android:background="@drawable/bg_drag_handle"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"/>
+
+            <!-- Panel header: count + label -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:layout_marginBottom="10dp">
+
+                <TextView
+                    android:id="@+id/tvDisasterCount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="All Disasters"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textSize="15sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/tvPointCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0 points"
+                    android:textColor="@color/colorTextMuted"
+                    android:textSize="12sp"
+                    android:background="@drawable/bg_badge_gray"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="2dp"/>
+            </LinearLayout>
+
+            <!-- ── SELECTED DISASTER DETAIL CARD ────────────────────────────
+                 Shown when a marker or list item is tapped.
+                 Mirrors web .request-detail-card styling.
+                 Hidden by default (gone), shown in showDisasterDetail().
+            -->
+            <LinearLayout
+                android:id="@+id/disasterDetailPanel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_card_elevated"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="10dp"
+                android:visibility="gone">
+
+                <!-- Title row + severity badge -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:id="@+id/detailTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text=""
+                        android:textColor="@color/colorTextPrimary"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_marginEnd="8dp"/>
+
+                    <TextView
+                        android:id="@+id/detailSeverityBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="HIGH"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:textColor="#FFFFFF"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"
+                        android:background="@drawable/bg_badge_high"/>
+                </LinearLayout>
+
+                <!-- Status row + owner actions -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:id="@+id/detailStatusBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Active"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorSuccess"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:paddingTop="3dp"
+                        android:paddingBottom="3dp"
+                        android:background="@drawable/bg_badge_active"/>
+
+                    <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1"/>
+
+                    <!-- Edit button (owner/admin only) -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnEditDisaster"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        android:text="Edit"
+                        android:textSize="11sp"
+                        app:backgroundTint="@color/colorSurface"
+                        app:strokeColor="@color/colorPrimary"
+                        app:strokeWidth="1dp"
+                        android:textColor="@color/colorPrimary"
+                        app:cornerRadius="20dp"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        android:layout_marginEnd="6dp"
+                        android:visibility="gone"/>
+
+                    <!-- Delete button (owner/admin only) -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnDeleteDisaster"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        android:text="Delete"
+                        android:textSize="11sp"
+                        app:backgroundTint="@color/colorSurface"
+                        app:strokeColor="@color/colorError"
+                        app:strokeWidth="1dp"
+                        android:textColor="@color/colorError"
+                        app:cornerRadius="20dp"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        android:visibility="gone"/>
+                </LinearLayout>
+
+                <!-- Date -->
+                <TextView
+                    android:id="@+id/detailDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="@color/colorTextMuted"
+                    android:textSize="11sp"
+                    android:layout_marginBottom="4dp"/>
+
+                <!-- Reporter -->
+                <TextView
+                    android:id="@+id/detailReporter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="@color/colorTextSecondary"
+                    android:textSize="12sp"
+                    android:layout_marginBottom="10dp"/>
+
+                <!-- Description box — matches web .card-description -->
+                <TextView
+                    android:id="@+id/detailDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="@color/colorTextSecondary"
+                    android:textSize="13sp"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:background="@drawable/bg_description_box"
+                    android:layout_marginBottom="10dp"
+                    android:lineSpacingMultiplier="1.5"/>
+
+                <!-- Coordinates -->
+                <TextView
+                    android:id="@+id/detailCoords"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="@color/colorTextMuted"
+                    android:textSize="11sp"
+                    android:layout_marginBottom="12dp"/>
+
+                <!-- Donate button — matches web .donate-btn navy full-width -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnDonate"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="💙  DONATE"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"
+                    android:letterSpacing="0.06"
+                    app:backgroundTint="@color/colorNavy"
+                    app:cornerRadius="10dp"/>
+            </LinearLayout>
+
+            <!-- ── DISASTER LIST ─────────────────────────────────────────────
+                 RecyclerView of all disasters, each item matches web .request-list-item
+            -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvDisasters"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="12dp"
+                android:clipToPadding="false"/>
+
+        </LinearLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <!-- ══ BOTTOM NAVIGATION ════════════════════════════════════════════════ -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/colorSurface"
+        app:menu="@menu/bottom_nav_menu"
+        app:itemIconTint="@color/bottom_nav_color"
+        app:itemTextColor="@color/bottom_nav_color"
+        app:labelVisibilityMode="labeled"
+        app:elevation="8dp"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

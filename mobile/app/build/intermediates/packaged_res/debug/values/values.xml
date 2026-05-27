@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="disaster_statuses">
+        <item>Active</item>
+        <item>Monitoring</item>
+        <item>Resolved</item>
+    </string-array>
+    <string-array name="severity_levels">
+        <item>Low</item>
+        <item>Medium</item>
+        <item>High</item>
+        <item>Critical</item>
+    </string-array>
+    <color name="colorAccent">#60a5fa</color>
+    <color name="colorBackground">#f6f7f9</color>
+    <color name="colorBorder">#e5e7eb</color>
+    <color name="colorBorderLight">#f3f4f6</color>
+    <color name="colorError">#dc2626</color>
+    <color name="colorNavy">#111827</color>
+    <color name="colorNavyDark">#0d1117</color>
+    <color name="colorOnPrimary">#FFFFFF</color>
+    <color name="colorPrimary">#3b82f6</color>
+    <color name="colorPrimaryDark">#1d4ed8</color>
+    <color name="colorSeverityCritical">#7c3aed</color>
+    <color name="colorSeverityHigh">#ef4444</color>
+    <color name="colorSeverityLow">#3b82f6</color>
+    <color name="colorSeverityMedium">#f97316</color>
+    <color name="colorSuccess">#16a34a</color>
+    <color name="colorSurface">#FFFFFF</color>
+    <color name="colorSurfaceDark">#1f2937</color>
+    <color name="colorTextMuted">#9ca3af</color>
+    <color name="colorTextPrimary">#111827</color>
+    <color name="colorTextSecondary">#6b7280</color>
+    <color name="colorWarning">#92400e</color>
+    <string name="app_name">DisasterAidConnect</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="donate">Donate</string>
+    <string name="email">Email</string>
+    <string name="login">Login</string>
+    <string name="logout">Logout</string>
+    <string name="nav_admin">Admin</string>
+    <string name="nav_donations">Donations</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_map">Map</string>
+    <string name="nav_requests">Requests</string>
+    <string name="password">Password</string>
+    <string name="register">Register</string>
+    <string name="submit">Submit</string>
+    <style name="Theme.DisasterAidConnect" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+</resources>

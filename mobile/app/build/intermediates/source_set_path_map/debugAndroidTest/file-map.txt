@@ -1,0 +1,6 @@
+edu.cit.labaya.disasteraidconnect.test.app-jetified-core-1.5.0-0 C:\Users\GODWIN\.gradle\caches\transforms-3\0985a3b682c42a77be00defae8a13b5a\transformed\jetified-core-1.5.0\res
+edu.cit.labaya.disasteraidconnect.test.app-jetified-annotation-experimental-1.3.0-1 C:\Users\GODWIN\.gradle\caches\transforms-3\564ccea9b3c8a065eb7ff0117a9cb761\transformed\jetified-annotation-experimental-1.3.0\res
+edu.cit.labaya.disasteraidconnect.test.app-androidTest-2 C:\Users\GODWIN\Downloads\DisasterAidConnect-Android\DisasterAidConnect\app\build\generated\res\resValues\androidTest\debug
+edu.cit.labaya.disasteraidconnect.test.app-mergeDebugAndroidTestResources-3 C:\Users\GODWIN\Downloads\DisasterAidConnect-Android\DisasterAidConnect\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\merged.dir
+edu.cit.labaya.disasteraidconnect.test.app-mergeDebugAndroidTestResources-4 C:\Users\GODWIN\Downloads\DisasterAidConnect-Android\DisasterAidConnect\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\stripped.dir
+edu.cit.labaya.disasteraidconnect.test.app-merged_res-5 C:\Users\GODWIN\Downloads\DisasterAidConnect-Android\DisasterAidConnect\app\build\intermediates\merged_res\debugAndroidTest

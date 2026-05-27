@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <!-- Icon + subtitle -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="16dp">
+
+        <FrameLayout
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_stat_icon_orange"
+            android:layout_marginEnd="12dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="🔇"
+                android:textSize="18sp"/>
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/tvMuteTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mute User"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/tvMuteSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Restricting user from adding map points"
+                android:textColor="@color/colorTextMuted"
+                android:textSize="12sp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- DURATION label -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="DURATION"
+        android:textColor="@color/colorTextMuted"
+        android:textSize="11sp"
+        android:textAllCaps="true"
+        android:letterSpacing="0.08"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Preset buttons: 1d 3d 7d 14d 30d -->
+    <LinearLayout
+        android:id="@+id/layoutPresets"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="12dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn1d"
+            android:layout_width="0dp" android:layout_height="36dp"
+            android:layout_weight="1" android:text="1d"
+            android:textSize="12sp" android:layout_marginEnd="4dp"
+            app:cornerRadius="20dp"
+            app:backgroundTint="@color/colorSurface"
+            app:strokeColor="@color/colorBorder"
+            app:strokeWidth="1dp"
+            android:textColor="@color/colorTextSecondary"
+            xmlns:app="http://schemas.android.com/apk/res-auto"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn3d"
+            android:layout_width="0dp" android:layout_height="36dp"
+            android:layout_weight="1" android:text="3d"
+            android:textSize="12sp" android:layout_marginEnd="4dp"
+            app:cornerRadius="20dp"
+            app:backgroundTint="@color/colorSurface"
+            app:strokeColor="@color/colorBorder"
+            app:strokeWidth="1dp"
+            android:textColor="@color/colorTextSecondary"
+            xmlns:app="http://schemas.android.com/apk/res-auto"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn7d"
+            android:layout_width="0dp" android:layout_height="36dp"
+            android:layout_weight="1" android:text="7d"
+            android:textSize="12sp" android:layout_marginEnd="4dp"
+            app:cornerRadius="20dp"
+            app:backgroundTint="@color/colorSurface"
+            app:strokeColor="@color/colorBorder"
+            app:strokeWidth="1dp"
+            android:textColor="@color/colorTextSecondary"
+            xmlns:app="http://schemas.android.com/apk/res-auto"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn14d"
+            android:layout_width="0dp" android:layout_height="36dp"
+            android:layout_weight="1" android:text="14d"
+            android:textSize="12sp" android:layout_marginEnd="4dp"
+            app:cornerRadius="20dp"
+            app:backgroundTint="@color/colorSurface"
+            app:strokeColor="@color/colorBorder"
+            app:strokeWidth="1dp"
+            android:textColor="@color/colorTextSecondary"
+            xmlns:app="http://schemas.android.com/apk/res-auto"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn30d"
+            android:layout_width="0dp" android:layout_height="36dp"
+            android:layout_weight="1" android:text="30d"
+            android:textSize="12sp"
+            app:cornerRadius="20dp"
+            app:backgroundTint="@color/colorSurface"
+            app:strokeColor="@color/colorBorder"
+            app:strokeWidth="1dp"
+            android:textColor="@color/colorTextSecondary"
+            xmlns:app="http://schemas.android.com/apk/res-auto"/>
+    </LinearLayout>
+
+    <!-- CUSTOM DAYS label -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CUSTOM DAYS"
+        android:textColor="@color/colorTextMuted"
+        android:textSize="11sp"
+        android:textAllCaps="true"
+        android:letterSpacing="0.08"
+        android:layout_marginBottom="6dp"/>
+
+    <!-- Custom days input -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/bg_card"
+        android:padding="4dp"
+        android:layout_marginBottom="6dp">
+
+        <EditText
+            android:id="@+id/etMuteDuration"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="number"
+            android:text="3"
+            android:background="@null"
+            android:padding="8dp"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="days"
+            android:textColor="@color/colorTextMuted"
+            android:textSize="13sp"
+            android:paddingEnd="8dp"/>
+    </LinearLayout>
+
+    <!-- Expires label -->
+    <TextView
+        android:id="@+id/tvExpires"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Expires: —"
+        android:textColor="@color/colorTextMuted"
+        android:textSize="12sp"
+        android:layout_marginBottom="14dp"/>
+
+    <!-- REASON label -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="REASON"
+        android:textColor="@color/colorTextMuted"
+        android:textSize="11sp"
+        android:textAllCaps="true"
+        android:letterSpacing="0.08"
+        android:layout_marginBottom="6dp"/>
+
+    <EditText
+        android:id="@+id/etMuteReason"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:hint="e.g. Spamming false disaster reports..."
+        android:inputType="textMultiLine"
+        android:gravity="top"
+        android:background="@drawable/bg_card"
+        android:padding="12dp"/>
+</LinearLayout>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    bg_donation_icon.xml
+    Blue rounded square background for the heart emoji in dialog_donate.xml.
+    Mirrors web .donation-modal-icon-wrap { background: #eff6ff; border-radius: 14px }
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#EFF6FF"/>
+    <corners android:radius="14dp"/>
+</shape>

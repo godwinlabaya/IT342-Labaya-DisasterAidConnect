@@ -1,0 +1,3 @@
+edu.cit.labaya.disasteraidconnect.test
+style WhiteBackgroundDialogTheme
+style WhiteBackgroundTheme
